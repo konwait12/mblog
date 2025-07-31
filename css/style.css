@@ -1,8 +1,116 @@
+:root {
+    --primary-color: #4e54c8;
+    --secondary-color: #8f94fb;
+    --accent-color: #ff6b6b;
+    --text-color: #333;
+    --light-text: #f8f9fa;
+    --glass-bg: rgba(255, 255, 255, 0.15);
+    --glass-border: rgba(255, 255, 255, 0.18);
+    --shadow: 0 8px 32px rgba(31, 38, 135, 0.2);
+    --dark-bg: #1a1a2e;
+    --darker-bg: #0d0d1a;
+}
+
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-image: url('https://pic1.zhimg.com/v2-cbac7dab8c8035cce5c8c6847e4fef5d_r.jpg?source=2c26e567');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    color: var(--light-text);
+    min-height: 100vh;
+    position: relative;
+    overflow-x: hidden;
+}
+
+body::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: -1;
+}
+
+/* 登录面板 */
+.login-panel {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(26, 26, 46, 0.95);
+    padding: 2.5rem;
+    border-radius: 15px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+    width: 90%;
+    max-width: 400px;
+    z-index: 1000;
+    text-align: center;
+}
+
+.login-panel h2 {
+    margin-bottom: 1.5rem;
+    color: var(--accent-color);
+}
+
+.login-form .form-group {
+    margin-bottom: 1.5rem;
+}
+
+.login-form label {
+    display: block;
+    text-align: left;
+    margin-bottom: 0.5rem;
+    color: #adb5bd;
+}
+
+.login-form input {
+    width: 100%;
+    padding: 0.8rem;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(0, 0, 0, 0.3);
+    color: white;
+    font-size: 1rem;
+}
+
+.login-btn {
+    width: 100%;
+    padding: 1rem;
+    background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+    border: none;
+    border-radius: 8px;
+    color: white;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.login-btn:hover {
+    opacity: 0.9;
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.admin-notice {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    z-index: 1001;
+    cursor: pointer;
 }
 
 /* 头部样式 */
@@ -11,6 +119,9 @@ header {
     justify-content: space-between;
     align-items: center;
     padding: 1.5rem 5%;
+    background: var(--glass-bg);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--glass-border);
     position: sticky;
     top: 0;
     z-index: 100;
@@ -56,9 +167,37 @@ nav a:hover, nav a.active {
     box-shadow: 0 0 10px rgba(143, 148, 251, 0.5);
 }
 
-.header-actions {
+.search-container {
     display: flex;
-    gap: 1rem;
+    flex-grow: 1;
+    max-width: 400px;
+    margin: 0 2rem;
+}
+
+.search-container input {
+    width: 100%;
+    padding: 0.8rem 1.5rem;
+    border-radius: 50px 0 0 50px;
+    border: 1px solid var(--secondary-color);
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    font-size: 1rem;
+    outline: none;
+}
+
+.search-container button {
+    padding: 0 1.5rem;
+    border-radius: 0 50px 50px 0;
+    border: 1px solid var(--secondary-color);
+    border-left: none;
+    background: var(--primary-color);
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.search-container button:hover {
+    background: var(--secondary-color);
 }
 
 .btn {
@@ -99,8 +238,12 @@ nav a:hover, nav a.active {
 .hero {
     text-align: center;
     padding: 5rem 1rem;
+    background: var(--glass-bg);
+    backdrop-filter: blur(10px);
     border-radius: 20px;
     margin-bottom: 3rem;
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--shadow);
     position: relative;
     overflow: hidden;
 }
@@ -139,12 +282,47 @@ nav a:hover, nav a.active {
     margin-top: 2rem;
 }
 
+/* 分类区域 */
+.categories {
+    margin-bottom: 2rem;
+}
+
+.categories h3 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    color: white;
+}
+
+.category-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+}
+
+.category-tag {
+    background: rgba(78, 84, 200, 0.3);
+    color: white;
+    padding: 0.5rem 1.2rem;
+    border-radius: 50px;
+    font-size: 0.9rem;
+    border: 1px solid rgba(143, 148, 251, 0.3);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.category-tag:hover, .category-tag.active {
+    background: var(--primary-color);
+    transform: translateY(-2px);
+}
+
 /* 博客文章样式 */
 .section-title {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 2rem;
+    flex-wrap: wrap;
+    gap: 1rem;
 }
 
 .section-title h3 {
@@ -164,6 +342,26 @@ nav a:hover, nav a.active {
     border-radius: 2px;
 }
 
+.sort-options {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 0.5rem 1rem;
+    border-radius: 50px;
+}
+
+.sort-options select {
+    background: transparent;
+    border: none;
+    color: white;
+    outline: none;
+}
+
+.sort-options option {
+    background: var(--darker-bg);
+}
+
 .blogs-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
@@ -172,8 +370,12 @@ nav a:hover, nav a.active {
 }
 
 .blog-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(10px);
     border-radius: 15px;
     overflow: hidden;
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--shadow);
     transition: all 0.4s ease;
 }
 
@@ -235,9 +437,13 @@ nav a:hover, nav a.active {
 .about-section {
     display: flex;
     gap: 3rem;
+    background: var(--glass-bg);
+    backdrop-filter: blur(10px);
     border-radius: 20px;
     padding: 3rem;
     margin-bottom: 4rem;
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--shadow);
 }
 
 .about-image {
@@ -252,27 +458,6 @@ nav a:hover, nav a.active {
     width: 100%;
     height: 100%;
     object-fit: cover;
-}
-
-.change-avatar-btn {
-    position: absolute;
-    bottom: 15px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: rgba(0, 0, 0, 0.7);
-    color: white;
-    border: none;
-    padding: 0.5rem 1rem;
-    border-radius: 50px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    transition: all 0.3s ease;
-}
-
-.change-avatar-btn:hover {
-    background: rgba(0, 0, 0, 0.9);
 }
 
 .about-content {
@@ -291,39 +476,6 @@ nav a:hover, nav a.active {
     color: #e9ecef;
 }
 
-.about-form {
-    margin-top: 2rem;
-    padding: 1.5rem;
-    border-radius: 15px;
-    background: rgba(255, 255, 255, 0.1);
-}
-
-.form-group {
-    margin-bottom: 1.5rem;
-}
-
-.form-group label {
-    display: block;
-    margin-bottom: 0.5rem;
-    color: #adb5bd;
-    font-weight: 500;
-}
-
-.form-group input, .form-group textarea, .form-group select {
-    width: 100%;
-    padding: 0.8rem;
-    border-radius: 8px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    background: rgba(0, 0, 0, 0.3);
-    color: white;
-    font-size: 1rem;
-}
-
-.form-group textarea {
-    min-height: 100px;
-    resize: vertical;
-}
-
 .skills {
     display: flex;
     flex-wrap: wrap;
@@ -338,82 +490,6 @@ nav a:hover, nav a.active {
     border-radius: 50px;
     font-size: 0.9rem;
     border: 1px solid rgba(143, 148, 251, 0.3);
-}
-
-.settings-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 2rem;
-    padding-bottom: 1rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.settings-header h3 {
-    font-size: 1.5rem;
-    color: white;
-}
-
-.close-settings {
-    background: none;
-    border: none;
-    color: var(--accent-color);
-    font-size: 1.5rem;
-    cursor: pointer;
-    transition: transform 0.3s ease;
-}
-
-.close-settings:hover {
-    transform: rotate(90deg);
-}
-
-.setting-group {
-    margin-bottom: 2rem;
-}
-
-.setting-group h4 {
-    color: var(--accent-color);
-    margin-bottom: 1rem;
-    font-size: 1.1rem;
-}
-
-.preset-bg {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 10px;
-    margin-top: 10px;
-}
-
-.bg-option {
-    height: 60px;
-    border-radius: 8px;
-    cursor: pointer;
-    border: 2px solid transparent;
-    transition: all 0.3s ease;
-}
-
-.bg-option:hover {
-    transform: scale(1.05);
-    border-color: var(--accent-color);
-}
-
-.save-btn {
-    width: 100%;
-    padding: 1rem;
-    background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
-    border: none;
-    border-radius: 8px;
-    color: white;
-    font-weight: 600;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.save-btn:hover {
-    opacity: 0.9;
-    transform: translateY(-3px);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
 }
 
 /* 页脚 */
@@ -479,6 +555,12 @@ footer {
     }
     nav ul {
         gap: 1rem;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    .search-container {
+        margin: 1rem 0;
+        max-width: 100%;
     }
     .hero h2 {
         font-size: 2.5rem;
@@ -486,18 +568,13 @@ footer {
     .blogs-grid {
         grid-template-columns: 1fr;
     }
-    .settings-panel {
-        width: 100%;
-        right: -100%;
-    }
 }
 
 @media (max-width: 480px) {
     .hero-btns {
         flex-direction: column;
     }
-    nav ul {
-        flex-wrap: wrap;
-        justify-content: center;
+    .login-panel {
+        padding: 1.5rem;
     }
 }

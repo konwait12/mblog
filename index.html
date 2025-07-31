@@ -5,12 +5,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>kon-myblog - 网络安全小白的博客</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="css/glassmorphism.css">
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-    <!-- 动态背景效果 -->
-    <div class="dynamic-bg" id="dynamic-bg"></div>
+    <!-- 登录面板 -->
+    <div class="login-panel" id="login-panel">
+        <h2><i class="fas fa-lock"></i> 管理员登录</h2>
+        <form class="login-form" id="login-form">
+            <div class="form-group">
+                <label for="username">用户名</label>
+                <input type="text" id="username" placeholder="请输入管理员用户名" required>
+            </div>
+            <div class="form-group">
+                <label for="password">密码</label>
+                <input type="password" id="password" placeholder="请输入密码" required>
+            </div>
+            <button type="submit" class="login-btn">登录管理后台</button>
+        </form>
+    </div>
+
+    <!-- 管理员提示 -->
+    <div class="admin-notice" id="admin-notice" style="display: none;">
+        <i class="fas fa-user-shield"></i> 管理员已登录
+    </div>
 
     <!-- 头部导航 -->
     <header>
@@ -18,22 +35,24 @@
             <i class="fas fa-blog"></i>
             <h1>kon-myblog</h1>
         </div>
+        
+        <!-- 搜索框 -->
+        <div class="search-container">
+            <input type="text" id="search-input" placeholder="搜索文章...">
+            <button id="search-btn"><i class="fas fa-search"></i></button>
+        </div>
+        
         <nav>
             <ul>
                 <li><a href="#" class="active">首页</a></li>
                 <li><a href="#blogs">博客</a></li>
                 <li><a href="#about">关于我</a></li>
                 <li><a href="#contact">联系</a></li>
+                <li><a href="admin.html" id="admin-link" style="display: none;">
+                    <i class="fas fa-user-shield"></i> 后台
+                </a></li>
             </ul>
         </nav>
-        <div class="header-actions">
-            <button class="btn btn-outline" id="toggle-settings">
-                <i class="fas fa-cog"></i> 自定义设置
-            </button>
-            <button class="btn btn-primary" id="new-blog-btn">
-                <i class="fas fa-pen"></i> 写博客
-            </button>
-        </div>
     </header>
 
     <!-- 主内容区域 -->
@@ -52,13 +71,31 @@
             </div>
         </section>
 
+        <!-- 博客分类 -->
+        <section class="categories">
+            <h3>文章分类</h3>
+            <div class="category-tags">
+                <span class="category-tag active" data-category="all">全部</span>
+                <span class="category-tag" data-category="security">网络安全</span>
+                <span class="category-tag" data-category="tools">工具使用</span>
+                <span class="category-tag" data-category="tutorial">教程</span>
+                <span class="category-tag" data-category="ctf">CTF竞赛</span>
+                <span class="category-tag" data-category="linux">Linux系统</span>
+            </div>
+        </section>
+
         <!-- 博客文章区域 -->
         <section id="blogs">
             <div class="section-title">
                 <h3>最新文章</h3>
-                <button class="btn btn-outline" id="add-blog-btn">
-                    <i class="fas fa-plus"></i> 添加文章
-                </button>
+                <div class="sort-options">
+                    <span>排序:</span>
+                    <select id="sort-select">
+                        <option value="newest">最新发布</option>
+                        <option value="oldest">最早发布</option>
+                        <option value="popular">最多评论</option>
+                    </select>
+                </div>
             </div>
             <div class="blogs-grid" id="blogs-container">
                 <!-- 博客文章将通过JS动态加载 -->
@@ -68,135 +105,22 @@
         <!-- 关于我区域 -->
         <section id="about" class="about-section">
             <div class="about-image">
-                <img id="profile-avatar" src="images/default-avatar.jpg" alt="关于我">
-                <button class="change-avatar-btn" id="change-avatar-btn">
-                    <i class="fas fa-camera"></i> 更换头像
-                </button>
+                <img id="profile-avatar" src="https://img0.baidu.com/it/u=3147389754,3153593117&fm=253&app=138&f=JPEG?w=800&h=1422" alt="关于我">
             </div>
             <div class="about-content">
                 <h3>关于我</h3>
                 <p id="profile-description">你好！我是一个网络安全领域的学习者，对保护数字世界充满热情。虽然我现在还是一名"小白"，但我每天都在努力学习新知识，探索这个令人兴奋的领域。</p>
                 
-                <div class="about-form">
-                    <div class="form-group">
-                        <label for="profile-name">姓名</label>
-                        <input type="text" id="profile-name" value="网络安全小白">
-                    </div>
-                    <div class="form-group">
-                        <label for="profile-title">头衔</label>
-                        <input type="text" id="profile-title" value="网络安全爱好者">
-                    </div>
-                    <div class="form-group">
-                        <label for="profile-bio">个人简介</label>
-                        <textarea id="profile-bio" rows="4">通过这个博客，我希望分享我的学习旅程、发现的安全技巧以及遇到的有趣挑战。我相信网络安全是每个人的责任，而教育是提高安全意识的第一步。</textarea>
-                    </div>
-                    <button class="save-btn" id="save-profile-btn">
-                        <i class="fas fa-save"></i> 保存个人信息
-                    </button>
-                </div>
-                
                 <div class="skills" id="skills-container">
-                    <!-- 技能标签将通过JS动态加载 -->
+                    <span class="skill-tag">网络安全基础</span>
+                    <span class="skill-tag">密码学入门</span>
+                    <span class="skill-tag">Web安全</span>
+                    <span class="skill-tag">Linux系统</span>
+                    <span class="skill-tag">Python编程</span>
+                    <span class="skill-tag">CTF竞赛</span>
                 </div>
             </div>
         </section>
-    </div>
-
-    <!-- 设置面板 -->
-    <div class="settings-panel" id="settings-panel">
-        <div class="settings-header">
-            <h3><i class="fas fa-cog"></i> 自定义设置</h3>
-            <button class="close-settings" id="close-settings">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-        
-        <div class="setting-group">
-            <h4><i class="fas fa-image"></i> 背景设置</h4>
-            <div class="form-group">
-                <label for="bg-image-url">背景图片URL</label>
-                <input type="text" id="bg-image-url" placeholder="输入图片URL">
-            </div>
-            <div class="form-group">
-                <label for="bg-opacity">背景透明度</label>
-                <input type="range" id="bg-opacity" min="0.1" max="1" step="0.1" value="0.7">
-            </div>
-            <div class="form-group">
-                <label>预设背景</label>
-                <div class="preset-bg">
-                    <div class="bg-option" data-bg="linear-gradient(135deg, #1a1a2e, #16213e, #0f3460)"></div>
-                    <div class="bg-option" data-bg="linear-gradient(135deg, #2C3E50, #4CA1AF)"></div>
-                    <div class="bg-option" data-bg="linear-gradient(135deg, #232526, #414345)"></div>
-                    <div class="bg-option" data-bg="linear-gradient(135deg, #3a7bd5, #00d2ff)"></div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="setting-group">
-            <h4><i class="fas fa-paint-brush"></i> 主题设置</h4>
-            <div class="form-group">
-                <label for="primary-color">主色调</label>
-                <input type="color" id="primary-color" value="#4e54c8">
-            </div>
-            <div class="form-group">
-                <label for="secondary-color">副色调</label>
-                <input type="color" id="secondary-color" value="#8f94fb">
-            </div>
-            <div class="form-group">
-                <label for="glass-opacity">卡片透明度</label>
-                <input type="range" id="glass-opacity" min="0.1" max="0.3" step="0.05" value="0.15">
-            </div>
-        </div>
-        
-        <div class="setting-group">
-            <h4><i class="fas fa-user"></i> 个人设置</h4>
-            <div class="form-group">
-                <label for="blog-name">博客名称</label>
-                <input type="text" id="blog-name" value="kon-myblog">
-            </div>
-            <div class="form-group">
-                <label for="blog-desc">个人简介</label>
-                <textarea id="blog-desc">网络安全小白，探索技术的边界，分享学习的旅程</textarea>
-            </div>
-        </div>
-        
-        <button class="save-btn" id="save-settings">
-            <i class="fas fa-save"></i> 保存设置
-        </button>
-    </div>
-
-    <!-- 写博客模态框 -->
-    <div class="modal" id="blog-modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3><i class="fas fa-pen"></i> 写新博客</h3>
-                <button class="close-modal" id="close-blog-modal">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <label for="blog-title">标题</label>
-                    <input type="text" id="blog-title" placeholder="输入博客标题">
-                </div>
-                <div class="form-group">
-                    <label for="blog-image">封面图片URL</label>
-                    <input type="text" id="blog-image" placeholder="输入图片URL">
-                </div>
-                <div class="form-group">
-                    <label for="blog-content">内容</label>
-                    <textarea id="blog-content" rows="10" placeholder="输入博客内容..."></textarea>
-                </div>
-                <div class="form-group">
-                    <label for="blog-tags">标签（用逗号分隔）</label>
-                    <input type="text" id="blog-tags" placeholder="网络安全, 基础, 教程">
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-outline" id="cancel-blog">取消</button>
-                <button class="btn btn-primary" id="publish-blog">发布</button>
-            </div>
-        </div>
     </div>
 
     <!-- 页脚 -->
@@ -212,8 +136,6 @@
         </div>
     </footer>
 
-    <script src="js/settings.js"></script>
-    <script src="js/blog.js"></script>
     <script src="js/main.js"></script>
 </body>
 </html>
