@@ -9,6 +9,11 @@
     --shadow: 0 8px 32px rgba(31, 38, 135, 0.2);
     --dark-bg: #1a1a2e;
     --darker-bg: #0d0d1a;
+    /* 新增色调方案变量 */
+    --theme-light-primary: #4a90e2;
+    --theme-dark-primary: #2d3748;
+    --theme-blue-primary: #2b6cb0;
+    --theme-green-primary: #2e7d32;
 }
 
 * {
@@ -537,6 +542,33 @@ footer {
     padding-top: 1.5rem;
     border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
+
+/* 访客色调切换按钮样式 */
+.theme-switcher {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: var(--glass-bg);
+    padding: 10px;
+    border-radius: 50px;
+    display: flex;
+    gap: 8px;
+    z-index: 90;
+}
+
+.theme-btn {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+}
+
+.theme-default { background-color: #4e54c8; }
+.theme-light { background-color: #4a90e2; }
+.theme-dark { background-color: #2d3748; }
+.theme-blue { background-color: #2b6cb0; }
+.theme-green { background-color: #2e7d32; }
 
 /* 响应式设计 */
 @media (max-width: 992px) {

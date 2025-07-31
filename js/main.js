@@ -95,6 +95,12 @@ function setupEventListeners() {
         handleLogin();
     });
     
+    // 隐藏登录按钮点击事件
+    document.getElementById('login-btn-hidden').addEventListener('click', function(e) {
+        e.preventDefault();
+        document.getElementById('login-panel').style.display = 'block';
+    });
+    
     // 搜索按钮
     document.getElementById('search-btn').addEventListener('click', handleSearch);
     document.getElementById('search-input').addEventListener('keypress', function(e) {
@@ -113,6 +119,44 @@ function setupEventListeners() {
     document.getElementById('sort-select').addEventListener('change', function() {
         sortBlogs(this.value);
     });
+    
+    // 色调切换功能
+    document.querySelectorAll('.theme-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const theme = this.getAttribute('data-theme');
+            const root = document.documentElement;
+            
+            switch(theme) {
+                case 'light':
+                    root.style.setProperty('--primary-color', 'var(--theme-light-primary)');
+                    root.style.setProperty('--secondary-color', '#90caf9');
+                    break;
+                case 'dark':
+                    root.style.setProperty('--primary-color', 'var(--theme-dark-primary)');
+                    root.style.setProperty('--secondary-color', '#4a5568');
+                    break;
+                case 'blue':
+                    root.style.setProperty('--primary-color', 'var(--theme-blue-primary)');
+                    root.style.setProperty('--secondary-color', '#63b3ed');
+                    break;
+                case 'green':
+                    root.style.setProperty('--primary-color', 'var(--theme-green-primary)');
+                    root.style.setProperty('--secondary-color', '#68d391');
+                    break;
+                default:
+                    root.style.setProperty('--primary-color', '#4e54c8');
+                    root.style.setProperty('--secondary-color', '#8f94fb');
+            }
+            // 保存用户偏好
+            localStorage.setItem('kon-myblog-theme', theme);
+        });
+    });
+
+    // 加载保存的色调偏好
+    const savedTheme = localStorage.getItem('kon-myblog-theme');
+    if (savedTheme) {
+        document.querySelector(`.theme-btn[data-theme="${savedTheme}"]`).click();
+    }
 }
 
 // 处理登录
@@ -120,10 +164,12 @@ function handleLogin() {
     const username = document.getElementById('username').value;
     const password = document.getElementById('password').value;
     
-    // 简单验证（实际应用中应使用更安全的方式）
-    if (username === 'admin' && password === 'admin123') {
+    // 修改为新的账号密码验证
+    if (username === 'kon-myblog' && password === 'hfhf888888') {
         localStorage.setItem('kon-myblog-admin', 'true');
         checkLoginStatus();
+        // 登录成功后隐藏面板
+        document.getElementById('login-panel').style.display = 'none';
     } else {
         alert('用户名或密码错误！');
     }

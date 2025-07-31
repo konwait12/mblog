@@ -8,8 +8,8 @@
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-    <!-- 登录面板 -->
-    <div class="login-panel" id="login-panel">
+    <!-- 登录面板（默认隐藏） -->
+    <div class="login-panel" id="login-panel" style="display: none;">
         <h2><i class="fas fa-lock"></i> 管理员登录</h2>
         <form class="login-form" id="login-form">
             <div class="form-group">
@@ -50,6 +50,10 @@
                 <li><a href="#contact">联系</a></li>
                 <li><a href="admin.html" id="admin-link" style="display: none;">
                     <i class="fas fa-user-shield"></i> 后台
+                </a></li>
+                <!-- 新增隐藏登录按钮 -->
+                <li><a href="#" id="login-btn-hidden" style="opacity: 0.3; font-size: 0.8em;">
+                    <i class="fas fa-key"></i> 管理登录
                 </a></li>
             </ul>
         </nav>
@@ -121,6 +125,15 @@
                 </div>
             </div>
         </section>
+    </div>
+
+    <!-- 访客色调切换 -->
+    <div class="theme-switcher">
+        <button class="theme-btn theme-default" title="默认色调" data-theme="default"></button>
+        <button class="theme-btn theme-light" title="明亮色调" data-theme="light"></button>
+        <button class="theme-btn theme-dark" title="深色色调" data-theme="dark"></button>
+        <button class="theme-btn theme-blue" title="蓝色色调" data-theme="blue"></button>
+        <button class="theme-btn theme-green" title="绿色色调" data-theme="green"></button>
     </div>
 
     <!-- 页脚 -->
