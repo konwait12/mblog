@@ -1,85 +1,103 @@
-/* 博客详情页特定样式 */
-.blog-detail-container {
-    max-width: 1000px;
-    margin: 2rem auto;
-    padding: 0 1.5rem;
+/* 博客详情页样式 */
+.blog-detail-page {
+    padding: 2rem 0;
 }
 
-.blog-article {
-    background: var(--glass-bg);
-    backdrop-filter: blur(10px);
-    border-radius: 15px;
-    padding: 2.5rem;
-    margin-bottom: 2rem;
-    border: 1px solid var(--glass-border);
+.blog-detail {
+    background-color: var(--card-bg);
+    border-radius: 10px;
+    overflow: hidden;
     box-shadow: var(--shadow);
+    margin-bottom: 2rem;
+}
+
+#blog-article {
+    padding: 2rem;
 }
 
 .blog-header {
-    text-align: center;
     margin-bottom: 2rem;
 }
 
 .blog-title {
-    font-size: 2.5rem;
+    font-size: 2rem;
     margin-bottom: 1rem;
     color: white;
 }
 
 .blog-meta {
     display: flex;
-    justify-content: center;
+    flex-wrap: wrap;
     gap: 1.5rem;
-    color: #adb5bd;
-    margin-bottom: 1.5rem;
+    color: var(--light-text);
+    font-size: 0.95rem;
+}
+
+.blog-meta i {
+    margin-right: 0.3rem;
 }
 
 .blog-image {
-    width: 100%;
-    height: 450px;
-    border-radius: 15px;
-    overflow: hidden;
     margin-bottom: 2rem;
 }
 
 .blog-image img {
     width: 100%;
-    height: 100%;
+    height: auto;
+    border-radius: 8px;
     object-fit: cover;
 }
 
 .blog-content {
-    font-size: 1.1rem;
     line-height: 1.8;
-    color: #e9ecef;
+    font-size: 1.05rem;
 }
 
-.blog-content h2, .blog-content h3 {
+/* Markdown 样式优化 */
+.blog-content h1,
+.blog-content h2,
+.blog-content h3,
+.blog-content h4,
+.blog-content h5,
+.blog-content h6 {
+    margin-top: 1.8rem;
+    margin-bottom: 1rem;
     color: white;
-    margin: 1.5em 0 0.8em;
 }
 
-.blog-content h2 {
+.blog-content h1 {
     font-size: 1.8rem;
     border-bottom: 2px solid var(--primary-color);
     padding-bottom: 0.5rem;
 }
 
-.blog-content h3 {
+.blog-content h2 {
     font-size: 1.5rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 0.5rem;
 }
 
 .blog-content p {
     margin-bottom: 1.2rem;
 }
 
-.blog-content ul, .blog-content ol {
+.blog-content ul, 
+.blog-content ol {
     margin-left: 1.5rem;
     margin-bottom: 1.5rem;
 }
 
 .blog-content li {
     margin-bottom: 0.5rem;
+}
+
+.blog-content a {
+    color: #4dabf7;
+    text-decoration: none;
+}
+
+.blog-content a:hover {
+    text-decoration: underline;
 }
 
 .blog-content blockquote {
@@ -90,6 +108,14 @@
     font-style: italic;
 }
 
+.blog-content img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    margin: 1.5rem 0;
+}
+
+/* 代码块样式 */
 .blog-content pre {
     background: rgba(0, 0, 0, 0.3);
     padding: 1rem;
@@ -99,7 +125,8 @@
 }
 
 .blog-content code {
-    font-family: 'Courier New', monospace;
+    font-family: 'Fira Code', monospace;
+    font-size: 0.9rem;
 }
 
 .blog-tags {
@@ -118,6 +145,7 @@
     border: 1px solid rgba(143, 148, 251, 0.3);
 }
 
+/* 评论区样式 */
 .comments-section {
     background: var(--glass-bg);
     backdrop-filter: blur(10px);
@@ -166,83 +194,17 @@
 
 .comment-content {
     line-height: 1.6;
-    color: #e9ecef;
 }
 
-.no-comments {
-    text-align: center;
-    padding: 2rem;
-    color: #adb5bd;
+.comment-form {
+    margin-top: 1.5rem;
 }
 
-.no-comments i {
-    font-size: 3rem;
-    margin-bottom: 1rem;
-    display: block;
-}
-
+/* 相关文章 */
 .related-posts {
-    margin-bottom: 3rem;
+    margin-top: 3rem;
 }
 
-.related-posts h2 {
+.related-posts h3 {
     margin-bottom: 1.5rem;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.form-row {
-    display: flex;
-    gap: 1rem;
-    margin-bottom: 1rem;
-}
-
-.form-row .form-group {
-    flex: 1;
-}
-
-.loading {
-    text-align: center;
-    padding: 3rem;
-    font-size: 1.2rem;
-    color: #adb5bd;
-}
-
-.error {
-    text-align: center;
-    padding: 3rem;
-    color: #ff6b6b;
-}
-
-.error i {
-    font-size: 3rem;
-    margin-bottom: 1rem;
-    display: block;
-}
-
-/* 响应式设计 */
-@media (max-width: 768px) {
-    .blog-article {
-        padding: 1.5rem;
-    }
-    
-    .blog-title {
-        font-size: 2rem;
-    }
-    
-    .blog-meta {
-        flex-direction: column;
-        align-items: center;
-        gap: 0.5rem;
-    }
-    
-    .blog-image {
-        height: 300px;
-    }
-    
-    .form-row {
-        flex-direction: column;
-        gap: 0;
-    }
 }

@@ -3,340 +3,210 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>后台管理 - kon-myblog</title>
+    <title>博客管理 | 网络安全博客</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/admin.css">
 </head>
-<body>
-    <!-- 后台导航 -->
-    <header class="admin-header">
+<body class="admin-body">
+    <!-- 管理员头部 -->
+    <div class="admin-header">
         <div class="logo">
-            <i class="fas fa-user-shield"></i>
-            <h1>kon-myblog 后台管理</h1>
+            <h1>博客管理后台</h1>
         </div>
-        <nav>
-            <ul>
-                <li><a href="#" class="active"><i class="fas fa-home"></i> 仪表盘</a></li>
-                <li><a href="#blog-management"><i class="fas fa-file-alt"></i> 文章管理</a></li>
-                <li><a href="#settings"><i class="fas fa-cog"></i> 网站设置</a></li>
-                <li><a href="#users"><i class="fas fa-users"></i> 用户管理</a></li>
-                <li><a href="index.html"><i class="fas fa-sign-out-alt"></i> 返回前台</a></li>
-            </ul>
-        </nav>
-    </header>
-
-    <div class="admin-container">
-        <!-- 仪表盘 -->
-        <section id="dashboard" class="admin-section active">
-            <h2><i class="fas fa-chart-line"></i> 仪表盘</h2>
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-icon">
-                        <i class="fas fa-file-alt"></i>
-                    </div>
-                    <div class="stat-info">
-                        <h3>文章总数</h3>
-                        <p class="stat-value" id="total-posts">12</p>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon">
-                        <i class="fas fa-comments"></i>
-                    </div>
-                    <div class="stat-info">
-                        <h3>评论总数</h3>
-                        <p class="stat-value" id="total-comments">86</p>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon">
-                        <i class="fas fa-users"></i>
-                    </div>
-                    <div class="stat-info">
-                        <h3>访客数</h3>
-                        <p class="stat-value" id="total-visitors">1,234</p>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon">
-                        <i class="fas fa-tags"></i>
-                    </div>
-                    <div class="stat-info">
-                        <h3>分类数</h3>
-                        <p class="stat-value" id="total-categories">5</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="admin-row">
-                <div class="admin-col">
-                    <h3><i class="fas fa-history"></i> 最近活动</h3>
-                    <div class="activity-list">
-                        <div class="activity-item">
-                            <div class="activity-icon">
-                                <i class="fas fa-plus-circle"></i>
-                            </div>
-                            <div class="activity-content">
-                                <p>您发布了新文章 <strong>网络安全基础入门指南</strong></p>
-                                <small>2023-07-25 14:32</small>
-                            </div>
-                        </div>
-                        <div class="activity-item">
-                            <div class="activity-icon">
-                                <i class="fas fa-edit"></i>
-                            </div>
-                            <div class="activity-content">
-                                <p>您更新了文章 <strong>密码管理最佳实践</strong></p>
-                                <small>2023-07-24 10:15</small>
-                            </div>
-                        </div>
-                        <div class="activity-item">
-                            <div class="activity-icon">
-                                <i class="fas fa-user"></i>
-                            </div>
-                            <div class="activity-content">
-                                <p>新用户 <strong>Alice</strong> 注册了账号</p>
-                                <small>2023-07-23 18:42</small>
-                            </div>
-                        </div>
-                        <div class="activity-item">
-                            <div class="activity-icon">
-                                <i class="fas fa-comment"></i>
-                            </div>
-                            <div class="activity-content">
-                                <p><strong>Bob</strong> 在 <strong>双因素认证的重要性</strong> 下发表了评论</p>
-                                <small>2023-07-22 09:27</small>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="admin-col">
-                    <h3><i class="fas fa-chart-pie"></i> 分类分布</h3>
-                    <div class="chart-container">
-                        <canvas id="category-chart"></canvas>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- 文章管理 -->
-        <section id="blog-management" class="admin-section">
-            <h2><i class="fas fa-file-alt"></i> 文章管理</h2>
-            
-            <div class="admin-toolbar">
-                <button class="btn btn-primary" id="new-post-btn">
-                    <i class="fas fa-plus"></i> 新建文章
-                </button>
-                
-                <div class="admin-search">
-                    <input type="text" placeholder="搜索文章...">
-                    <button><i class="fas fa-search"></i></button>
-                </div>
-                
-                <div class="filter-options">
-                    <select>
-                        <option>所有分类</option>
-                        <option>网络安全</option>
-                        <option>工具使用</option>
-                        <option>教程</option>
-                        <option>CTF竞赛</option>
-                    </select>
-                    
-                    <select>
-                        <option>所有状态</option>
-                        <option>已发布</option>
-                        <option>草稿</option>
-                        <option>已归档</option>
-                    </select>
-                </div>
-            </div>
-            
-            <div class="admin-table-container">
-                <table class="admin-table">
-                    <thead>
-                        <tr>
-                            <th>标题</th>
-                            <th>作者</th>
-                            <th>分类</th>
-                            <th>日期</th>
-                            <th>评论</th>
-                            <th>状态</th>
-                            <th>操作</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>网络安全基础入门指南</td>
-                            <td>Admin</td>
-                            <td>网络安全</td>
-                            <td>2023-07-25</td>
-                            <td>12</td>
-                            <td><span class="status-badge published">已发布</span></td>
-                            <td>
-                                <button class="btn-icon"><i class="fas fa-edit"></i></button>
-                                <button class="btn-icon"><i class="fas fa-trash"></i></button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>密码管理最佳实践</td>
-                            <td>Admin</td>
-                            <td>网络安全</td>
-                            <td>2023-07-20</td>
-                            <td>8</td>
-                            <td><span class="status-badge published">已发布</span></td>
-                            <td>
-                                <button class="btn-icon"><i class="fas fa-edit"></i></button>
-                                <button class="btn-icon"><i class="fas fa-trash"></i></button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>双因素认证的重要性</td>
-                            <td>Admin</td>
-                            <td>网络安全</td>
-                            <td>2023-07-18</td>
-                            <td>15</td>
-                            <td><span class="status-badge published">已发布</span></td>
-                            <td>
-                                <button class="btn-icon"><i class="fas fa-edit"></i></button>
-                                <button class="btn-icon"><i class="fas fa-trash"></i></button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Kali Linux工具使用指南</td>
-                            <td>Admin</td>
-                            <td>工具使用</td>
-                            <td>2023-07-15</td>
-                            <td>6</td>
-                            <td><span class="status-badge published">已发布</span></td>
-                            <td>
-                                <button class="btn-icon"><i class="fas fa-edit"></i></button>
-                                <button class="btn-icon"><i class="fas fa-trash"></i></button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>CTF入门指南（草稿）</td>
-                            <td>Admin</td>
-                            <td>CTF竞赛</td>
-                            <td>2023-07-10</td>
-                            <td>0</td>
-                            <td><span class="status-badge draft">草稿</span></td>
-                            <td>
-                                <button class="btn-icon"><i class="fas fa-edit"></i></button>
-                                <button class="btn-icon"><i class="fas fa-trash"></i></button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-            
-            <div class="pagination">
-                <button class="btn-icon"><i class="fas fa-chevron-left"></i></button>
-                <button class="active">1</button>
-                <button>2</button>
-                <button>3</button>
-                <button class="btn-icon"><i class="fas fa-chevron-right"></i></button>
-            </div>
-        </section>
-
-        <!-- 网站设置 -->
-        <section id="settings" class="admin-section">
-            <h2><i class="fas fa-cog"></i> 网站设置</h2>
-            
-            <div class="admin-tabs">
-                <button class="tab-btn active" data-tab="general">常规设置</button>
-                <button class="tab-btn" data-tab="design">外观设计</button>
-                <button class="tab-btn" data-tab="seo">SEO优化</button>
-                <button class="tab-btn" data-tab="users">用户设置</button>
-            </div>
-            
-            <div class="tab-content active" id="general-tab">
-                <form class="admin-form">
-                    <div class="form-group">
-                        <label for="site-title">网站标题</label>
-                        <input type="text" id="site-title" value="kon-myblog">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="site-description">网站描述</label>
-                        <textarea id="site-description">网络安全小白的博客 | 探索技术的边界，分享学习的旅程</textarea>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="admin-email">管理员邮箱</label>
-                        <input type="email" id="admin-email" value="admin@kon-myblog.com">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="timezone">时区设置</label>
-                        <select id="timezone">
-                            <option>(UTC+08:00) 北京，重庆，香港特别行政区，乌鲁木齐</option>
-                            <option>(UTC+09:00) 大阪，札幌，东京</option>
-                            <option>(UTC-05:00) 东部时间（美国和加拿大）</option>
-                        </select>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="date-format">日期格式</label>
-                        <select id="date-format">
-                            <option>2023年7月28日</option>
-                            <option>2023-07-28</option>
-                            <option>28/07/2023</option>
-                        </select>
-                    </div>
-                    
-                    <button type="submit" class="save-btn">保存设置</button>
-                </form>
-            </div>
-            
-            <div class="tab-content" id="design-tab">
-                <div class="admin-row">
-                    <div class="admin-col">
-                        <div class="form-group">
-                            <label for="theme-color">主题颜色</label>
-                            <input type="color" id="theme-color" value="#4e54c8">
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="bg-image">背景图片</label>
-                            <input type="text" id="bg-image" value="https://pic1.zhimg.com/v2-cbac7dab8c8035cce5c8c6847e4fef5d_r.jpg?source=2c26e567">
-                            <button class="btn btn-outline">上传图片</button>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="avatar">作者头像</label>
-                            <input type="text" id="avatar" value="https://img0.baidu.com/it/u=3147389754,3153593117&fm=253&app=138&f=JPEG?w=800&h=1422">
-                            <button class="btn btn-outline">上传图片</button>
-                        </div>
-                    </div>
-                    
-                    <div class="admin-col">
-                        <div class="preview-box">
-                            <h4>主题预览</h4>
-                            <div class="theme-preview">
-                                <div class="preview-header">
-                                    <div class="preview-logo">kon-myblog</div>
-                                    <div class="preview-nav">
-                                        <span>首页</span>
-                                        <span>博客</span>
-                                        <span>关于</span>
-                                    </div>
-                                </div>
-                                <div class="preview-card">
-                                    <div class="preview-card-img"></div>
-                                    <div class="preview-card-content">
-                                        <h5>博客文章标题</h5>
-                                        <p>这是一篇示例博客文章的预览内容...</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
+        <div class="admin-actions">
+            <button id="logout-btn" class="btn btn-outline">
+                <i class="fas fa-sign-out-alt"></i> 退出登录
+            </button>
+        </div>
     </div>
 
+    <!-- 主要内容 -->
+    <main class="admin-main">
+        <div class="container admin-container">
+            <!-- 标签页导航 -->
+            <div class="admin-tabs">
+                <button class="active" data-tab="dashboard-tab">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>仪表盘</span>
+                </button>
+                <button data-tab="blogs-tab">
+                    <i class="fas fa-blog"></i>
+                    <span>文章管理</span>
+                </button>
+                <button data-tab="comments-tab">
+                    <i class="far fa-comments"></i>
+                    <span>评论管理</span>
+                </button>
+                <button data-tab="settings-tab">
+                    <i class="fas fa-cog"></i>
+                    <span>设置</span>
+                </button>
+            </div>
+
+            <!-- 仪表盘 -->
+            <div id="dashboard-tab" class="tab-content">
+                <section class="admin-section">
+                    <h3>网站统计</h3>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-file-alt"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h4>总文章数</h4>
+                                <p id="stat-total-blogs">0</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="far fa-comment"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h4>总评论数</h4>
+                                <p id="stat-total-comments">0</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-folder"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h4>分类数</h4>
+                                <p id="stat-total-categories">0</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h4>最新文章</h4>
+                                <p id="stat-latest-post">无</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="admin-section">
+                    <h3>最近活动</h3>
+                    <p class="activity-info">这里将显示您的最近操作记录</p>
+                    <button id="clear-storage" class="btn btn-warning">
+                        <i class="fas fa-trash"></i> 清理本地存储数据
+                    </button>
+                </section>
+            </div>
+
+            <!-- 文章管理 -->
+            <div id="blogs-tab" class="tab-content" style="display: none;">
+                <section class="admin-section">
+                    <div class="section-header">
+                        <h3>文章管理</h3>
+                        <div class="search-filter">
+                            <input type="text" id="blog-search" placeholder="搜索文章...">
+                        </div>
+                    </div>
+                    <div id="blog-list">
+                        <!-- 文章列表将动态加载 -->
+                    </div>
+                    <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+                        <button id="add-blog-btn" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> 新增文章
+                        </button>
+                        <a href="https://github.com/konwait12/konyyds.github.io/blob/main/data/blogs.json" target="_blank" class="btn btn-outline">
+                            <i class="fas fa-code"></i> 编辑源代码
+                        </a>
+                    </div>
+                </section>
+            </div>
+
+            <!-- 评论管理 -->
+            <div id="comments-tab" class="tab-content" style="display: none;">
+                <section class="admin-section">
+                    <div class="section-header">
+                        <h3>评论管理</h3>
+                        <div class="search-filter">
+                            <input type="text" id="comment-search" placeholder="搜索评论...">
+                        </div>
+                    </div>
+                    <div id="comments-list">
+                        <!-- 评论列表将动态加载 -->
+                    </div>
+                </section>
+            </div>
+
+            <!-- 设置 -->
+            <div id="settings-tab" class="tab-content" style="display: none;">
+                <section class="admin-section">
+                    <h3>基本设置</h3>
+                    <form id="settings-form">
+                        <div class="form-group">
+                            <label for="site-title">网站标题</label>
+                            <input type="text" id="site-title" placeholder="输入网站标题">
+                        </div>
+                        <div class="form-group">
+                            <label for="hero-title">首页标题</label>
+                            <input type="text" id="hero-title" placeholder="输入首页标题">
+                        </div>
+                        <div class="form-group">
+                            <label for="hero-subtitle">首页副标题</label>
+                            <input type="text" id="hero-subtitle" placeholder="输入首页副标题">
+                        </div>
+                        <button type="submit" class="btn btn-primary">保存设置</button>
+                    </form>
+                </section>
+
+                <section class="admin-section">
+                    <h3>个人资料</h3>
+                    <form id="profile-form">
+                        <div class="form-group">
+                            <label for="profile-avatar">头像URL</label>
+                            <input type="text" id="profile-avatar" placeholder="输入头像图片URL">
+                        </div>
+                        <div class="form-group">
+                            <label for="profile-desc">个人描述</label>
+                            <textarea id="profile-desc" rows="4" placeholder="输入个人描述"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="profile-skills">技能标签（用逗号分隔）</label>
+                            <input type="text" id="profile-skills" placeholder="例如：网络安全,Python,Linux">
+                        </div>
+                        <button type="submit" class="btn btn-primary">保存资料</button>
+                    </form>
+                </section>
+
+                <section class="admin-section">
+                    <h3>密码修改</h3>
+                    <form id="password-form">
+                        <div class="form-group">
+                            <label for="current-password">当前密码</label>
+                            <input type="password" id="current-password" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="new-password">新密码</label>
+                            <input type="password" id="new-password" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="confirm-password">确认新密码</label>
+                            <input type="password" id="confirm-password" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">修改密码</button>
+                    </form>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer>
+        <div class="footer-content">
+            <p class="copyright">
+                © 2024 网络安全博客 | 管理后台
+            </p>
+        </div>
+    </footer>
+
+    <!-- 管理员逻辑 -->
     <script src="js/admin.js"></script>
 </body>
 </html>

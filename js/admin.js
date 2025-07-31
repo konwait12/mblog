@@ -1,349 +1,379 @@
-// 初始化后台管理页面
-document.addEventListener('DOMContentLoaded', () => {
-    // 检查登录状态
-    checkAdminLogin();
-    
-    // 初始化仪表盘
-    initDashboard();
-    
-    // 设置标签页切换
-    setupTabs();
-    
-    // 初始化博客管理
-    initBlogManagement();
-    
-    // 事件监听
-    setupEventListeners();
-});
-
-// 检查管理员登录状态
-function checkAdminLogin() {
+// 检查管理员是否已登录
+function checkAdminLoggedIn() {
     const isLoggedIn = localStorage.getItem('kon-myblog-admin') === 'true';
     if (!isLoggedIn) {
         window.location.href = 'index.html';
+        alert('请先登录管理员账户');
     }
 }
 
-// 初始化仪表盘
-function initDashboard() {
-    // 获取博客数据
-    const blogs = getBlogs();
-    
-    // 计算统计数据
-    const totalPosts = blogs.length;
-    const totalComments = blogs.reduce((sum, blog) => sum + blog.comments, 0);
-    const totalCategories = new Set(blogs.map(blog => blog.category)).size;
-    
-    // 更新统计数据
-    document.getElementById('total-posts').textContent = totalPosts;
-    document.getElementById('total-comments').textContent = totalComments;
-    document.getElementById('total-categories').textContent = totalCategories;
-    
-    // 初始化图表
-    initChart();
-}
-
-// 初始化图表
-function initChart() {
-    const ctx = document.getElementById('category-chart').getContext('2d');
-    const blogs = getBlogs();
-    
-    // 按分类统计文章数
-    const categoryCount = {};
-    blogs.forEach(blog => {
-        categoryCount[blog.category] = (categoryCount[blog.category] || 0) + 1;
-    });
-    
-    // 准备图表数据
-    const categories = Object.keys(categoryCount);
-    const counts = Object.values(categoryCount);
-    
-    // 生成颜色
-    const colors = generateChartColors(categories.length);
-    
-    const data = {
-        labels: categories.map(cat => getCategoryName(cat)),
-        datasets: [{
-            label: '文章数量',
-            data: counts,
-            backgroundColor: colors,
-            borderWidth: 1
-        }]
-    };
-    
-    // 创建图表
-    new Chart(ctx, {
-        type: 'pie',
-        data: data,
-        options: {
-            responsive: true,
-            plugins: {
-                legend: {
-                    position: 'bottom',
-                    labels: {
-                        color: '#f8f9fa',
-                        font: {
-                            size: 14
-                        }
-                    }
-                },
-                tooltip: {
-                    callbacks: {
-                        label: function(context) {
-                            return `${context.label}: ${context.raw} 篇`;
-                        }
-                    }
+// 初始化博客数据（管理员页面使用本地存储以便预览）
+function initBlogs() {
+    // 从JSON文件加载并存储到本地存储供管理界面使用
+    fetch('data/blogs.json')
+        .then(response => response.json())
+        .then(data => {
+            localStorage.setItem('kon-blogs', JSON.stringify(data));
+            renderBlogList();
+            updateDashboardStats();
+        })
+        .catch(error => {
+            console.error('加载初始博客数据失败:', error);
+            //  fallback数据
+            const fallbackBlogs = [
+                {
+                    id: 1,
+                    title: "示例文章",
+                    content: "# 示例文章\n\n这是一篇示例文章，用于初始化博客数据。\n\n## 二级标题\n\n- 列表项1\n- 列表项2",
+                    image: "https://picsum.photos/600/400",
+                    date: new Date().toLocaleDateString(),
+                    comments: 0,
+                    category: "security",
+                    tags: ["示例"]
                 }
-            }
-        }
-    });
-}
-
-// 设置标签页切换
-function setupTabs() {
-    const tabBtns = document.querySelectorAll('.tab-btn');
-    const tabContents = document.querySelectorAll('.tab-content');
-    
-    tabBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-            // 移除所有活动状态
-            tabBtns.forEach(b => b.classList.remove('active'));
-            tabContents.forEach(c => c.classList.remove('active'));
-            
-            // 添加当前活动状态
-            btn.classList.add('active');
-            const tabId = btn.getAttribute('data-tab') + '-tab';
-            document.getElementById(tabId).classList.add('active');
+            ];
+            localStorage.setItem('kon-blogs', JSON.stringify(fallbackBlogs));
+            renderBlogList();
+            updateDashboardStats();
         });
-    });
 }
 
-// 初始化博客管理
-function initBlogManagement() {
-    renderBlogTable();
-}
-
-// 渲染博客表格
-function renderBlogTable() {
-    const blogs = getBlogs();
-    const tableBody = document.querySelector('.admin-table tbody');
+// 渲染博客列表
+function renderBlogList() {
+    const blogs = JSON.parse(localStorage.getItem('kon-blogs') || '[]');
+    const blogListElement = document.getElementById('blog-list');
     
-    tableBody.innerHTML = '';
+    if (!blogListElement) return; // 防止DOM元素未加载
     
-    blogs.forEach(blog => {
-        const row = document.createElement('tr');
-        row.innerHTML = `
-            <td>${blog.title}</td>
-            <td>${blog.author}</td>
-            <td>${getCategoryName(blog.category)}</td>
-            <td>${formatDate(blog.date)}</td>
-            <td>${blog.comments}</td>
-            <td><span class="status-badge published">已发布</span></td>
-            <td>
-                <button class="btn-icon edit-blog" data-id="${blog.id}"><i class="fas fa-edit"></i></button>
-                <button class="btn-icon delete-blog" data-id="${blog.id}"><i class="fas fa-trash"></i></button>
-            </td>
-        `;
-        tableBody.appendChild(row);
-    });
-    
-    // 添加编辑事件
-    document.querySelectorAll('.edit-blog').forEach(btn => {
-        btn.addEventListener('click', function() {
-            const blogId = this.getAttribute('data-id');
-            editBlog(blogId);
-        });
-    });
-    
-    // 添加删除事件
-    document.querySelectorAll('.delete-blog').forEach(btn => {
-        btn.addEventListener('click', function() {
-            const blogId = this.getAttribute('data-id');
-            deleteBlog(blogId);
-        });
-    });
-}
-
-// 编辑博客
-function editBlog(blogId) {
-    // 在实际应用中，这里会打开编辑模态框
-    alert(`编辑博客 ID: ${blogId}`);
-}
-
-// 删除博客
-function deleteBlog(blogId) {
-    if (confirm('确定要删除这篇博客吗？此操作不可撤销。')) {
-        const blogs = getBlogs();
-        const updatedBlogs = blogs.filter(blog => blog.id != blogId);
-        
-        // 保存更新后的博客列表
-        localStorage.setItem('kon-myblog-blogs', JSON.stringify(updatedBlogs));
-        
-        // 重新渲染表格
-        renderBlogTable();
-        
-        alert('博客已成功删除！');
-    }
-}
-
-// 设置事件监听器
-function setupEventListeners() {
-    // 保存设置
-    document.querySelectorAll('.save-btn').forEach(btn => {
-        btn.addEventListener('click', saveSettings);
-    });
-    
-    // 新建博客按钮
-    document.getElementById('new-post-btn').addEventListener('click', createNewBlog);
-    
-    // 搜索功能
-    document.querySelector('.admin-search button').addEventListener('click', handleAdminSearch);
-    document.querySelector('.admin-search input').addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') handleAdminSearch();
-    });
-    
-    // 分类筛选
-    document.querySelector('.filter-options select').addEventListener('change', function() {
-        filterBlogs(this.value);
-    });
-}
-
-// 保存设置
-function saveSettings(e) {
-    e.preventDefault();
-    
-    // 获取设置值
-    const siteTitle = document.getElementById('site-title').value;
-    const siteDesc = document.getElementById('site-description').value;
-    const adminEmail = document.getElementById('admin-email').value;
-    const primaryColor = document.getElementById('primary-color').value;
-    const secondaryColor = document.getElementById('secondary-color').value;
-    const bgImageUrl = document.getElementById('bg-image-url').value;
-    const avatarUrl = document.getElementById('avatar-url').value;
-    
-    // 保存设置到localStorage
-    const settings = {
-        siteTitle,
-        siteDesc,
-        adminEmail,
-        primaryColor,
-        secondaryColor,
-        bgImageUrl,
-        avatarUrl
-    };
-    
-    localStorage.setItem('kon-myblog-settings', JSON.stringify(settings));
-    
-    // 提示用户
-    alert('设置已保存！');
-}
-
-// 创建新博客
-function createNewBlog() {
-    // 在实际应用中，这里会打开博客编辑器
-    const newBlog = {
-        id: Date.now(),
-        title: "新博客标题",
-        content: "在这里开始撰写您的新博客...",
-        image: "https://images.unsplash.com/photo-1499750310107-5fef28a66643?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80",
-        date: new Date().toISOString(),
-        author: "管理员",
-        comments: 0,
-        category: "security",
-        tags: ["新博客"]
-    };
-    
-    const blogs = getBlogs();
-    blogs.unshift(newBlog);
-    localStorage.setItem('kon-myblog-blogs', JSON.stringify(blogs));
-    
-    // 重新渲染表格
-    renderBlogTable();
-    
-    alert('新博客已创建！');
-}
-
-// 处理后台搜索
-function handleAdminSearch() {
-    const searchTerm = document.querySelector('.admin-search input').value.toLowerCase();
-    if (!searchTerm) {
-        renderBlogTable();
-        return;
-    }
-    
-    const blogs = getBlogs();
-    const filteredBlogs = blogs.filter(blog => 
-        blog.title.toLowerCase().includes(searchTerm) || 
-        blog.content.toLowerCase().includes(searchTerm) ||
-        blog.tags.some(tag => tag.toLowerCase().includes(searchTerm))
-    );
-    
-    renderFilteredBlogs(filteredBlogs);
-}
-
-// 按分类筛选博客
-function filterBlogs(category) {
-    const blogs = getBlogs();
-    
-    if (category === 'all') {
-        renderBlogTable();
-        return;
-    }
-    
-    const filteredBlogs = blogs.filter(blog => 
-        getCategoryName(blog.category) === category
-    );
-    
-    renderFilteredBlogs(filteredBlogs);
-}
-
-// 渲染筛选后的博客
-function renderFilteredBlogs(blogs) {
-    const tableBody = document.querySelector('.admin-table tbody');
-    
-    tableBody.innerHTML = '';
+    blogListElement.innerHTML = '';
     
     if (blogs.length === 0) {
-        tableBody.innerHTML = `
-            <tr>
-                <td colspan="7" class="no-results">
-                    <i class="fas fa-search"></i>
-                    <p>没有找到匹配的博客</p>
-                </td>
-            </tr>
-        `;
+        blogListElement.innerHTML = '<p class="no-data">暂无文章，请点击"新增文章"按钮创建</p>';
         return;
     }
     
+    // 创建表格
+    const table = document.createElement('table');
+    table.className = 'blogs-table';
+    table.innerHTML = `
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>标题</th>
+                <th>分类</th>
+                <th>发布日期</th>
+                <th>评论数</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody>
+            ${blogs.map(blog => `
+                <tr>
+                    <td>${blog.id}</td>
+                    <td>${blog.title}</td>
+                    <td>${getCategoryName(blog.category)}</td>
+                    <td>${blog.date}</td>
+                    <td>${blog.comments}</td>
+                    <td class="actions">
+                        <button class="btn btn-sm btn-edit" data-id="${blog.id}">
+                            <i class="fas fa-edit"></i> 编辑（源码教程）
+                        </button>
+                        <button class="btn btn-sm btn-delete" data-id="${blog.id}">
+                            <i class="fas fa-trash"></i> 删除（源码教程）
+                        </button>
+                    </td>
+                </tr>
+            `).join('')}
+        </tbody>
+    `;
+    
+    blogListElement.appendChild(table);
+    
+    // 添加编辑和删除事件监听
+    document.querySelectorAll('.btn-edit').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const blogId = parseInt(this.getAttribute('data-id'));
+            showEditSourceCodeTutorial(blogId);
+        });
+    });
+    
+    document.querySelectorAll('.btn-delete').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const blogId = parseInt(this.getAttribute('data-id'));
+            showDeleteSourceCodeTutorial(blogId);
+        });
+    });
+}
+
+// 显示编辑文章的源代码修改教程
+function showEditSourceCodeTutorial(blogId) {
+    const blogs = JSON.parse(localStorage.getItem('kon-blogs') || '[]');
+    const blog = blogs.find(b => b.id === blogId);
+    
+    if (!blog) return;
+    
+    // 截取Markdown内容作为示例
+    const contentPreview = blog.content.substring(0, 50).replace(/\n/g, ' ') + '...';
+    
+    alert(`【编辑文章源代码修改教程】
+1. 打开仓库中的 data/blogs.json 文件
+2. 找到id为 ${blogId} 的文章对象：
+{
+  "id": ${blogId},
+  "title": "${blog.title}",
+  "content": "${contentPreview}",
+  ...
+}
+3. 修改需要更新的字段（title、content、category等）
+4. 内容支持Markdown格式
+5. 注意保持JSON格式正确性（逗号、引号等）
+6. 保存文件并提交到GitHub仓库
+7. 等待页面部署后生效`);
+}
+
+// 显示删除文章的源代码修改教程
+function showDeleteSourceCodeTutorial(blogId) {
+    alert(`【删除文章源代码修改教程】
+1. 打开仓库中的 data/blogs.json 文件
+2. 找到id为 ${blogId} 的文章对象
+3. 删除该对象（注意删除前后的逗号，确保JSON格式正确）
+4. 同时删除评论数据：从localStorage中清除blog-${blogId}-comments
+5. 保存文件并提交到GitHub仓库
+6. 等待页面部署后生效`);
+}
+
+// 获取分类名称
+function getCategoryName(category) {
+    const categories = {
+        'security': '网络安全',
+        'tools': '工具实践',
+        'ctf': 'CTF竞赛',
+        'linux': 'Linux探索'
+    };
+    return categories[category] || '未分类';
+}
+
+// 更新仪表盘统计数据
+function updateDashboardStats() {
+    const blogs = JSON.parse(localStorage.getItem('kon-blogs') || '[]');
+    
+    // 计算评论总数
+    let totalComments = 0;
     blogs.forEach(blog => {
-        const row = document.createElement('tr');
-        row.innerHTML = `
-            <td>${blog.title}</td>
-            <td>${blog.author}</td>
-            <td>${getCategoryName(blog.category)}</td>
-            <td>${formatDate(blog.date)}</td>
-            <td>${blog.comments}</td>
-            <td><span class="status-badge published">已发布</span></td>
-            <td>
-                <button class="btn-icon edit-blog" data-id="${blog.id}"><i class="fas fa-edit"></i></button>
-                <button class="btn-icon delete-blog" data-id="${blog.id}"><i class="fas fa-trash"></i></button>
-            </td>
-        `;
-        tableBody.appendChild(row);
+        const comments = JSON.parse(localStorage.getItem(`blog-${blog.id}-comments`) || '[]');
+        totalComments += comments.length;
     });
     
-    // 重新绑定事件
-    document.querySelectorAll('.edit-blog').forEach(btn => {
-        btn.addEventListener('click', function() {
-            const blogId = this.getAttribute('data-id');
-            editBlog(blogId);
+    // 计算分类数量
+    const categories = new Set();
+    blogs.forEach(blog => categories.add(blog.category));
+    
+    // 更新统计数字
+    const statsElements = {
+        totalBlogs: document.getElementById('stat-total-blogs'),
+        totalComments: document.getElementById('stat-total-comments'),
+        totalCategories: document.getElementById('stat-total-categories'),
+        latestPost: document.getElementById('stat-latest-post')
+    };
+    
+    if (statsElements.totalBlogs) {
+        statsElements.totalBlogs.textContent = blogs.length;
+    }
+    
+    if (statsElements.totalComments) {
+        statsElements.totalComments.textContent = totalComments;
+    }
+    
+    if (statsElements.totalCategories) {
+        statsElements.totalCategories.textContent = categories.size;
+    }
+    
+    // 更新最新文章
+    if (statsElements.latestPost && blogs.length > 0) {
+        // 按日期排序，取最新的
+        const sortedBlogs = [...blogs].sort((a, b) => new Date(b.date) - new Date(a.date));
+        statsElements.latestPost.textContent = sortedBlogs[0].title;
+    }
+}
+
+// 渲染评论管理
+function renderComments() {
+    const commentsContainer = document.getElementById('comments-list');
+    if (!commentsContainer) return;
+    
+    const blogs = JSON.parse(localStorage.getItem('kon-blogs') || '[]');
+    
+    // 转换为数组并添加文章标题
+    const commentsArray = [];
+    blogs.forEach(blog => {
+        const comments = JSON.parse(localStorage.getItem(`blog-${blog.id}-comments`) || '[]');
+        comments.forEach(comment => {
+            commentsArray.push({
+                ...comment,
+                blogId: blog.id,
+                blogTitle: blog.title,
+                id: Date.now() + Math.floor(Math.random() * 1000) // 临时ID
+            });
         });
     });
     
-    document.querySelectorAll('.delete-blog').forEach(btn => {
+    // 按日期排序（最新的在前）
+    commentsArray.sort((a, b) => new Date(b.date) - new Date(a.date));
+    
+    if (commentsArray.length === 0) {
+        commentsContainer.innerHTML = '<p class="no-data">暂无评论</p>';
+        return;
+    }
+    
+    // 创建评论表格
+    const table = document.createElement('table');
+    table.className = 'comments-table';
+    table.innerHTML = `
+        <thead>
+            <tr>
+                <th>文章</th>
+                <th>评论者</th>
+                <th>内容</th>
+                <th>日期</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody>
+            ${commentsArray.map(comment => `
+                <tr>
+                    <td>${comment.blogTitle}</td>
+                    <td>${comment.name}</td>
+                    <td class="comment-content">${comment.content}</td>
+                    <td>${formatDate(comment.date)}</td>
+                    <td class="actions">
+                        <button class="btn btn-sm btn-delete-comment" 
+                                data-blogid="${comment.blogId}">
+                            <i class="fas fa-trash"></i> 删除
+                        </button>
+                    </td>
+                </tr>
+            `).join('')}
+        </tbody>
+    `;
+    
+    commentsContainer.innerHTML = '';
+    commentsContainer.appendChild(table);
+    
+    // 添加删除评论事件
+    document.querySelectorAll('.btn-delete-comment').forEach(btn => {
         btn.addEventListener('click', function() {
-            const blogId = this.getAttribute('data-id');
-            deleteBlog(blogId);
+            const blogId = parseInt(this.getAttribute('data-blogid'));
+            const row = this.closest('tr');
+            const commentContent = row.querySelector('.comment-content').textContent;
+            
+            if (confirm('确定要删除这条评论吗？')) {
+                // 获取该文章的所有评论
+                let comments = JSON.parse(localStorage.getItem(`blog-${blogId}-comments`) || '[]');
+                
+                // 找到并删除匹配的评论
+                comments = comments.filter(comment => comment.content !== commentContent);
+                
+                // 保存更新后的评论
+                localStorage.setItem(`blog-${blogId}-comments`, JSON.stringify(comments));
+                
+                // 重新渲染评论列表
+                renderComments();
+                updateDashboardStats();
+            }
         });
     });
+}
+
+// 页面加载完成后初始化
+document.addEventListener('DOMContentLoaded', () => {
+    // 检查登录状态
+    checkAdminLoggedIn();
+    
+    initBlogs();
+    
+    // 退出登录
+    document.getElementById('logout-btn').addEventListener('click', function() {
+        localStorage.removeItem('kon-myblog-admin');
+        window.location.href = 'index.html';
+    });
+    
+    // 清理本地存储数据
+    document.getElementById('clear-storage').addEventListener('click', function() {
+        if (confirm('确定要清理所有本地存储数据吗？这不会影响实际发布的内容。')) {
+            localStorage.clear();
+            alert('本地存储已清理，页面将刷新');
+            window.location.reload();
+        }
+    });
+    
+    // 新增文章按钮
+    document.getElementById('add-blog-btn').addEventListener('click', function() {
+        alert(`【新增文章源代码修改教程】
+1. 打开仓库中的 data/blogs.json 文件
+2. 在数组中添加新的文章对象：
+{
+  "id": ${Date.now()},
+  "title": "新文章标题",
+  "content": "# 文章标题\n\n文章内容支持Markdown格式...",
+  "image": "图片URL",
+  "date": "${new Date().toLocaleDateString()}",
+  "comments": 0,
+  "category": "security",
+  "tags": ["标签1", "标签2"]
+}
+3. 注意保持JSON格式正确性（最后一个对象后没有逗号）
+4. 保存文件并提交到GitHub仓库
+5. 等待页面部署后生效`);
+    });
+    
+    // 标签页切换
+    document.querySelectorAll('.admin-tabs button').forEach(button => {
+        button.addEventListener('click', function() {
+            const tabId = this.getAttribute('data-tab');
+            
+            // 更新按钮状态
+            document.querySelectorAll('.admin-tabs button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            this.classList.add('active');
+            
+            // 更新内容显示
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.style.display = 'none';
+            });
+            document.getElementById(tabId).style.display = 'block';
+            
+            // 如果切换到评论标签，重新渲染评论
+            if (tabId === 'comments-tab') {
+                renderComments();
+            }
+        });
+    });
+    
+    // 密码修改表单
+    document.getElementById('password-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const currentPassword = document.getElementById('current-password').value;
+        const newPassword = document.getElementById('new-password').value;
+        const confirmPassword = document.getElementById('confirm-password').value;
+        
+        if (currentPassword !== 'hfhf888888') {
+            alert('当前密码不正确');
+            return;
+        }
+        
+        if (newPassword !== confirmPassword) {
+            alert('两次输入的新密码不一致');
+            return;
+        }
+        
+        alert('密码修改需要在服务器端进行，此处仅为演示');
+        this.reset();
+    });
+});
+
+// 格式化日期
+function formatDate(dateString) {
+    const date = new Date(dateString);
+    return `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
 }

@@ -1,0 +1,35 @@
+[
+    {
+        "id": 1,
+        "title": "网络安全基础：如何保护你的在线隐私",
+        "content": "# 网络安全基础：如何保护你的在线隐私\n\n在数字时代，保护个人隐私变得尤为重要。随着我们越来越多地将个人信息存储在云端并在网上进行交易，了解如何保护这些信息免受窥探至关重要。\n\n## 1. 强密码的重要性\n\n使用强密码是保护在线账户的第一道防线。一个强密码应该：\n\n- 至少包含12个字符\n- 混合使用大小写字母、数字和特殊符号\n- 避免使用个人信息（如姓名、生日等）\n- 不同账户使用不同密码\n\n## 2. 双因素认证(2FA)\n\n双因素认证为您的账户提供了额外的安全层。即使有人获取了您的密码，他们也需要第二个验证因素才能登录。常见的2FA方法包括：\n\n- 短信验证码\n- 身份验证器应用（如Google Authenticator）\n- 硬件安全密钥\n\n## 3. 隐私设置检查\n\n定期检查您的在线账户隐私设置：\n\n```bash\n# 示例：检查社交媒体隐私设置\n# 这只是概念示例，实际需在各平台设置界面操作\n```\n\n## 4. 避免公共Wi-Fi风险\n\n公共Wi-Fi网络通常不安全，连接时应注意：\n\n- 避免访问敏感网站（银行、邮箱等）\n- 使用VPN加密网络连接\n- 确认Wi-Fi名称的正确性，避免连接到仿冒热点\n\n保护隐私是一个持续的过程，需要保持警惕并定期更新您的安全习惯。",
+        "image": "https://images.unsplash.com/photo-1555066931-4365d14bab8c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1170&q=80",
+        "date": "2024-01-15",
+        "comments": 12,
+        "category": "security",
+        "tags": ["网络安全", "隐私保护", "密码安全"]
+    },
+    {
+        "id": 2,
+        "title": "Kali Linux入门指南",
+        "content": "# Kali Linux入门指南\n\nKali Linux是安全专业人士和爱好者的首选工具。本指南将带您了解其基本功能和常用工具...\n\n### 安装步骤\n\n1. 从官方网站下载ISO镜像\n2. 使用Rufus或Etcher创建启动盘\n3. 启动计算机并从USB设备引导\n4. 按照安装向导完成安装\n\n## 常用工具介绍\n\n- **Nmap** - 网络扫描工具，用于发现网络中的主机和服务\n- **Metasploit** - 渗透测试框架，包含多种漏洞利用模块\n- **Wireshark** - 网络数据包分析器，用于检查网络流量\n- **Burp Suite** - Web应用安全测试工具\n\n```bash\n# 更新Kali Linux系统\napt update && apt upgrade -y\n\n# 安装额外工具\napt install -y nmap metasploit-framework wireshark\n```\n\n## 实用技巧\n\n- 使用`apt search`命令查找安全工具\n- 定期更新系统以获取最新工具和安全补丁\n- 加入Kali Linux社区获取支持和最新资讯\n- 学习使用`man`命令查看工具手册\n\nKali Linux提供了超过600种安全工具，掌握这些工具需要时间和实践，但它们将极大提升您的安全测试能力。",
+        "image": "https://images.unsplash.com/photo-1593508512255-86ab42a8e620?ixlib=rb-4.0.3&auto=format&fit=crop&w=1206&q=80",
+        "date": "2024-01-10",
+        "comments": 8,
+        "category": "tools",
+        "tags": ["Kali Linux", "渗透测试", "安全工具"]
+    },
+    {
+        "id": 3,
+        "title": "CTF竞赛入门技巧",
+        "content": "# CTF竞赛入门技巧\n\nCTF（Capture The Flag）是网络安全领域的竞赛形式，通过解决各种安全挑战来获取旗帜（Flag）。本文分享一些入门技巧...\n\n## 常见题型分类\n\n- **Web安全**：涉及SQL注入、XSS、文件上传等漏洞\n- **逆向工程**：分析二进制文件，找出程序逻辑或隐藏信息\n- **密码学**：破解各种加密算法和编码方式\n- **隐写术**：从图片、音频等文件中提取隐藏信息\n- **杂项**：各种有趣的安全相关挑战\n\n```python\n# Python示例：Base64解码获取Flag\nimport base64\n\nencoded_flag = 'Q1RGe2V4YW1wbGUxfQ=='\ndecoded_flag = base64.b64decode(encoded_flag)\nprint(decoded_flag.decode())  # 输出: CTF{example1}\n```\n\n## 学习资源\n\n1. **CTFtime** - 查看赛事和排名的权威平台\n2. **CTF平台**：\n   - Hack The Box\n   - TryHackMe\n   - 攻防世界\n3. **书籍**：\n   - 《CTF竞赛权威指南》\n   - 《Web安全权威指南》\n\n## 比赛策略\n\n- 从自己擅长的题型开始\n- 合理分配时间，不要在一道题上卡太久\n- 学会团队协作（团队赛）\n- 赛后复盘，总结经验\n\nCTF是学习网络安全的绝佳方式，通过实践巩固理论知识，不断提升自己的安全技能。",
+        "image": "https://picsum.photos/600/400?random=3",
+        "date": "2024-01-05",
+        "comments": 15,
+        "category": "ctf",
+        "tags": ["CTF", "安全竞赛", "网络安全"]
+    },
+    {
+        "id": 4,
+        "title": "Linux命令行效率提升技巧",
+        "content": "# Linux命令行效率提升技巧\n\n掌握Linux命令行可以极大提高工作效率。本文介绍一些实用技巧，帮助您更高效地使用命令行...\n\n## 常用快捷键\n\n- `Ctrl + R`：搜索历史命令\n- `Ctrl + A`：移动到行首\n- `Ctrl + E`：移动到行尾\n- `Ctrl + L`：清屏\n- `Ctrl + C`：终止当前命令\n- `Tab`：自动补全命令或文件名\n\n### 别名设置\n\n通过设置别名简化常用命令：\n\n```bash\n# 在.bashrc或.zshrc中设置别名\nalias ll='ls -lha'\nalias grep='grep --color=auto'\nalias ..='cd ..'\nalias ...='cd ../../'\nalias update='sudo apt update && sudo apt upgrade -y'\n```\n\n设置完成后，运行`source ~/.bashrc`使配置生效。\n\n## 管道和重定向\n\n利用管道组合命令可以实现强大功能：\n\n```bash\n# 查找包含特定关键词的进程\ntop -b -n 1 | grep 'python'\n\n# 将命令输出保存到文件\nls -l > file_list.txt\n

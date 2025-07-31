@@ -1,6 +1,6 @@
 // 初始化博客详情页
 document.addEventListener('DOMContentLoaded', () => {
-    // 检查登录状态
+    // 检查登录状态（仅登录状态存储在本地）
     checkAdminLogin();
     
     // 从URL获取博客ID
@@ -31,6 +31,31 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('detail-search-input').addEventListener('keypress', function(e) {
         if (e.key === 'Enter') handleDetailSearch();
     });
+
+    // 登录触发按钮
+    document.getElementById('login-trigger-detail').addEventListener('click', function(e) {
+        e.preventDefault();
+        document.getElementById('login-panel-detail').style.display = 'block';
+    });
+
+    // 登录表单提交
+    document.getElementById('login-form-detail').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const username = document.getElementById('username-detail').value;
+        const password = document.getElementById('password-detail').value;
+        
+        if (username === 'kon-myblog' && password === 'hfhf888888') {
+            localStorage.setItem('kon-myblog-admin', 'true');
+            checkAdminLogin();
+            document.getElementById('login-panel-detail').style.display = 'none';
+            document.getElementById('login-form-detail').reset();
+            alert('登录成功，已跳转到管理后台');
+            window.location.href = 'admin.html';
+        } else {
+            alert('用户名或密码错误');
+        }
+    });
 });
 
 // 检查管理员登录状态
@@ -41,10 +66,35 @@ function checkAdminLogin() {
     }
 }
 
-// 加载博客内容
-function loadBlog(blogId) {
+// 获取博客数据（直接从JSON文件获取）
+async function getBlogs() {
+    try {
+        const response = await fetch('data/blogs.json');
+        return await response.json();
+    } catch (error) {
+        console.error('获取博客数据失败:', error);
+        // 使用备用数据
+        const fallbackBlogs = [
+            {
+                id: 1,
+                title: "网络安全基础：如何保护你的在线隐私",
+                content: "# 网络安全基础：如何保护你的在线隐私\n\n在数字时代，保护个人隐私变得尤为重要...",
+                image: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1170&q=80",
+                date: "2024-01-15",
+                comments: 12,
+                category: "security",
+                tags: ["网络安全", "隐私保护"]
+            }
+            // 其他备用数据...
+        ];
+        return fallbackBlogs;
+    }
+}
+
+// 加载博客内容 - 渲染Markdown
+async function loadBlog(blogId) {
     // 获取所有博客
-    const blogs = getBlogs();
+    const blogs = await getBlogs();
     const blog = blogs.find(b => b.id == blogId);
     const blogArticle = document.getElementById('blog-article');
     
@@ -53,11 +103,14 @@ function loadBlog(blogId) {
         return;
     }
     
+    // 使用marked解析Markdown内容
+    const renderedContent = marked.parse(blog.content);
+    
     blogArticle.innerHTML = `
         <div class="blog-header">
             <h1 class="blog-title">${blog.title}</h1>
             <div class="blog-meta">
-                <span><i class="far fa-user"></i> ${blog.author}</span>
+                <span><i class="far fa-user"></i> 作者</span>
                 <span><i class="far fa-calendar"></i> ${formatDate(blog.date)}</span>
                 <span><i class="far fa-comment"></i> ${blog.comments} 条评论</span>
                 <span><i class="far fa-folder"></i> ${getCategoryName(blog.category)}</span>
@@ -69,18 +122,21 @@ function loadBlog(blogId) {
         </div>
         
         <div class="blog-content">
-            ${blog.content}
+            ${renderedContent}
         </div>
         
         <div class="blog-tags">
             ${blog.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
         </div>
     `;
+
+    // 对代码块进行高亮
+    hljs.highlightAll();
 }
 
 // 加载相关文章
-function loadRelatedPosts(currentBlogId) {
-    const blogs = getBlogs();
+async function loadRelatedPosts(currentBlogId) {
+    const blogs = await getBlogs();
     const currentBlog = blogs.find(b => b.id == currentBlogId);
     const relatedContainer = document.getElementById('related-container');
     
@@ -115,7 +171,7 @@ function loadRelatedPosts(currentBlogId) {
     `).join('');
 }
 
-// 加载评论
+// 加载评论（评论使用localStorage，因为没有后端存储）
 function loadComments(blogId) {
     const commentsContainer = document.getElementById('comments-container');
     const commentsCount = document.getElementById('comments-count');
@@ -184,22 +240,7 @@ function submitComment(blogId) {
     // 重置表单
     document.getElementById('comment-form').reset();
     
-    // 更新博客评论数
-    updateBlogCommentCount(blogId, comments.length);
-    
-    // 提示用户
     alert('评论已提交，感谢您的参与！');
-}
-
-// 更新博客评论数
-function updateBlogCommentCount(blogId, count) {
-    const blogs = getBlogs();
-    const blogIndex = blogs.findIndex(b => b.id == blogId);
-    
-    if (blogIndex !== -1) {
-        blogs[blogIndex].comments = count;
-        localStorage.setItem('kon-myblog-blogs', JSON.stringify(blogs));
-    }
 }
 
 // 详情页搜索处理
@@ -223,4 +264,25 @@ function showError(title, message) {
             <a href="index.html" class="btn btn-primary">返回首页</a>
         </div>
     `;
+}
+
+// 工具函数
+function formatDate(dateString) {
+    const date = new Date(dateString);
+    return `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日`;
+}
+
+function getCategoryName(category) {
+    const categories = {
+        'security': '网络安全',
+        'tools': '工具实践',
+        'ctf': 'CTF竞赛',
+        'linux': 'Linux探索'
+    };
+    return categories[category] || '未分类';
+}
+
+function validateEmail(email) {
+    const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(String(email).toLowerCase());
 }

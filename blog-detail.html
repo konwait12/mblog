@@ -3,101 +3,119 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>博客详情 - kon-myblog</title>
+    <title>文章详情 | 网络安全博客</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.7.0/styles/github-dark.min.css">
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/blog.css">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.7.0/lib/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
 </head>
 <body>
-    <!-- 头部导航 -->
+    <!-- 导航栏 -->
     <header>
         <div class="logo">
-            <i class="fas fa-blog"></i>
-            <h1>kon-myblog</h1>
+            <h1>网络安全博客</h1>
         </div>
-        
-        <!-- 搜索框 -->
+        <nav>
+            <ul>
+                <li><a href="index.html"><i class="fas fa-home"></i> 首页</a></li>
+                <li><a href="index.html#blogs" class="active"><i class="fas fa-blog"></i> 文章</a></li>
+                <li><a href="index.html#about"><i class="fas fa-user"></i> 关于</a></li>
+                <li><a href="index.html#contact"><i class="fas fa-envelope"></i> 联系</a></li>
+                <li><a href="#" id="login-trigger-detail"><i class="fas fa-sign-in-alt"></i> 登录</a></li>
+                <li><a href="admin.html" id="admin-link-detail" style="display: none;"><i class="fas fa-cog"></i> 管理</a></li>
+            </ul>
+        </nav>
         <div class="search-container">
             <input type="text" id="detail-search-input" placeholder="搜索文章...">
             <button id="detail-search-btn"><i class="fas fa-search"></i></button>
         </div>
-        
-        <nav>
-            <ul>
-                <li><a href="index.html">首页</a></li>
-                <li><a href="index.html#blogs">博客</a></li>
-                <li><a href="index.html#about">关于我</a></li>
-                <li><a href="index.html#contact">联系</a></li>
-                <li id="admin-link-detail" style="display: none;">
-                    <a href="admin.html"><i class="fas fa-user-shield"></i> 后台</a>
-                </li>
-            </ul>
-        </nav>
     </header>
 
-    <!-- 博客内容 -->
-    <div class="blog-detail-container">
-        <article class="blog-article" id="blog-article">
-            <!-- 博客内容将通过JS动态加载 -->
-            <div class="loading">
-                <i class="fas fa-spinner fa-spin"></i> 正在加载博客内容...
+    <!-- 登录面板 -->
+    <div id="login-panel-detail" class="login-panel" style="display: none;">
+        <span class="close-btn" onclick="document.getElementById('login-panel-detail').style.display='none'">&times;</span>
+        <h2><i class="fas fa-sign-in-alt"></i> 管理员登录</h2>
+        <form id="login-form-detail">
+            <div class="form-group">
+                <label for="username-detail">用户名</label>
+                <input type="text" id="username-detail" required>
             </div>
-        </article>
-        
-        <!-- 评论区域 -->
-        <section class="comments-section">
-            <h2><i class="far fa-comments"></i> 评论 <span id="comments-count">0</span></h2>
-            <div id="comments-container">
-                <!-- 评论将通过JS动态加载 -->
-                <div class="no-comments">
-                    <i class="far fa-comment-dots"></i>
-                    <p>暂无评论，成为第一个评论者吧！</p>
+            <div class="form-group">
+                <label for="password-detail">密码</label>
+                <input type="password" id="password-detail" required>
+            </div>
+            <button type="submit" class="btn btn-primary login-btn">登录</button>
+        </form>
+    </div>
+
+    <!-- 主要内容 -->
+    <main class="blog-detail-page">
+        <div class="container">
+            <div class="blog-detail">
+                <div id="blog-article">
+                    <!-- 动态加载文章内容 -->
+                    <div class="loading">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        <p>加载文章中...</p>
+                    </div>
                 </div>
             </div>
-            
-            <h3>发表评论</h3>
-            <form id="comment-form">
-                <div class="form-row">
+
+            <!-- 评论区 -->
+            <section class="comments-section">
+                <h2><i class="far fa-comments"></i> 评论区</h2>
+                <p>共有 <span id="comments-count">0</span> 条评论</p>
+                
+                <div id="comments-container">
+                    <!-- 动态加载评论 -->
+                </div>
+
+                <h3>发表评论</h3>
+                <form id="comment-form" class="comment-form">
                     <div class="form-group">
-                        <label for="comment-name">姓名</label>
+                        <label for="comment-name">昵称</label>
                         <input type="text" id="comment-name" required>
                     </div>
                     <div class="form-group">
                         <label for="comment-email">邮箱</label>
                         <input type="email" id="comment-email" required>
                     </div>
+                    <div class="form-group">
+                        <label for="comment-content">评论内容</label>
+                        <textarea id="comment-content" rows="5" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">提交评论</button>
+                </form>
+            </section>
+
+            <!-- 相关文章 -->
+            <section class="related-posts">
+                <h3>相关推荐</h3>
+                <div class="blogs-grid" id="related-container">
+                    <!-- 动态加载相关文章 -->
                 </div>
-                <div class="form-group">
-                    <label for="comment-content">评论内容</label>
-                    <textarea id="comment-content" rows="5" required></textarea>
-                </div>
-                <button type="submit" class="btn btn-primary">提交评论</button>
-            </form>
-        </section>
-        
-        <!-- 相关文章 -->
-        <section class="related-posts">
-            <h2><i class="fas fa-book-reader"></i> 相关文章</h2>
-            <div class="blogs-grid" id="related-container">
-                <!-- 相关文章将通过JS动态加载 -->
-            </div>
-        </section>
-    </div>
+            </section>
+        </div>
+    </main>
 
     <!-- 页脚 -->
-    <footer>
+    <footer id="contact">
         <div class="footer-content">
             <div class="social-links">
-                <a href="#"><i class="fab fa-github"></i></a>
-                <a href="#"><i class="fab fa-twitter"></i></a>
-                <a href="#"><i class="fab fa-linkedin"></i></a>
-                <a href="#"><i class="fab fa-discord"></i></a>
+                <a href="https://github.com/konwait12" target="_blank" aria-label="GitHub">
+                    <i class="fab fa-github"></i>
+                </a>
             </div>
-            <p class="copyright">© 2023 kon-myblog | 网络安全小白的博客 | 所有内容均采用知识共享许可</p>
+            <p class="copyright">
+                © 2024 网络安全博客 | 技术分享平台
+            </p>
         </div>
     </footer>
 
-    <script src="js/utils.js"></script>
+    <!-- 详情页逻辑 -->
     <script src="js/blog.js"></script>
 </body>
 </html>
