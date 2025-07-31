@@ -3,43 +3,69 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>网络安全博客 | 技术分享</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>网络安全博客 - 探索网络安全的世界</title>
+    <!-- 引入外部资源 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
+    
+    <!-- 自定义样式 -->
     <link rel="stylesheet" href="css/style.css">
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    
+    <!-- 配置Tailwind 配置 -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#4e54c8',
+                        secondary: '#8f94fb',
+                        accent: '#f8f9fa',
+                        dark: '#1a1a2e',
+                        light: '#f9f9f9'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
 </head>
 <body>
+    <!-- 管理员通知 -->
+    <div id="admin-notice" class="admin-notice" style="display: none;">
+        <i class="fas fa-user-shield"></i>
+        <span>您已登录管理员账户</span>
+    </div>
+
     <!-- 导航栏 -->
     <header>
         <div class="logo">
             <h1>网络安全博客</h1>
         </div>
+        
         <nav>
             <ul>
-                <li><a href="#home" class="active"><i class="fas fa-home"></i> 首页</a></li>
-                <li><a href="#blogs"><i class="fas fa-blog"></i> 文章</a></li>
+                <li><a href="#hero" class="active"><i class="fas fa-home"></i> 首页</a></li>
+                <li><a href="#blogs"><i class="fas fa-blog"></i> 博客</a></li>
                 <li><a href="#about"><i class="fas fa-user"></i> 关于</a></li>
                 <li><a href="#contact"><i class="fas fa-envelope"></i> 联系</a></li>
                 <li><a href="#" id="login-trigger"><i class="fas fa-sign-in-alt"></i> 登录</a></li>
                 <li><a href="admin.html" id="admin-link" style="display: none;"><i class="fas fa-cog"></i> 管理</a></li>
             </ul>
         </nav>
+        
         <div class="search-container">
             <input type="text" id="search-input" placeholder="搜索文章...">
             <button id="search-btn"><i class="fas fa-search"></i></button>
         </div>
     </header>
 
-    <!-- 管理员通知 -->
-    <div id="admin-notice" class="admin-notice" style="display: none;">
-        <i class="fas fa-user-shield"></i>
-        <span>已登录管理员模式</span>
-    </div>
-
     <!-- 登录面板 -->
     <div id="login-panel" class="login-panel" style="display: none;">
-        <span class="close-btn" onclick="document.getElementById('login-panel').style.display='none'">&times;</span>
-        <h2><i class="fas fa-sign-in-alt"></i> 管理员登录</h2>
+        <span class="close-panel close-btn">&times;</span>
+        <h2><i class="fas fa-lock"></i> 管理员登录</h2>
         <form id="login-form">
             <div class="form-group">
                 <label for="username">用户名</label>
@@ -49,108 +75,112 @@
                 <label for="password">密码</label>
                 <input type="password" id="password" required>
             </div>
-            <button type="submit" class="btn btn-primary login-btn">登录</button>
+            <button type="submit" class="btn login-btn">登录</button>
         </form>
     </div>
 
-    <!-- 主要内容 -->
-    <main>
-        <!-- 英雄区域 -->
-        <section id="home" class="hero">
-            <div class="hero-content">
-                <h2>探索网络安全的奇妙世界</h2>
-                <p>分享网络安全知识、工具使用和实战经验</p>
-                <div class="hero-btns">
-                    <a href="#blogs" class="btn btn-primary">浏览文章</a>
-                    <a href="#about" class="btn btn-outline">了解更多</a>
+    <!-- 英雄区域 -->
+    <section id="hero" class="hero">
+        <div class="hero-content">
+            <h2>探索网络安全的世界</h2>
+            <p>分享网络安全知识、技巧和最新动态，助您构建更安全的数字生活</p>
+            <div class="hero-btns">
+                <a href="#blogs" class="btn btn-primary">浏览文章</a>
+                <a href="#about" class="btn btn-outline">了解更多</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- 博客分类 -->
+    <section class="categories">
+        <div class="container">
+            <h3>文章分类</h3>
+            <div class="category-tags">
+                <button class="category-tag active" data-category="all">全部</button>
+                <button class="category-tag" data-category="security">网络安全</button>
+                <button class="category-tag" data-category="tools">工具实践</button>
+                <button class="category-tag" data-category="ctf">CTF竞赛</button>
+                <button class="category-tag" data-category="linux">Linux探索</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- 博客列表 -->
+    <section id="blogs" class="blogs">
+        <div class="container">
+            <div class="section-header">
+                <h3>最新文章</h3>
+                <div class="sort-filter">
+                    <label for="sort-select">排序方式：</label>
+                    <select id="sort-select">
+                        <option value="newest">最新发布</option>
+                        <option value="oldest">最早发布</option>
+                        <option value="popular">最多评论</option>
+                    </select>
                 </div>
             </div>
-        </section>
-
-        <!-- 博客分类 -->
-        <section class="categories">
-            <div class="container">
-                <h3>文章分类</h3>
-                <div class="category-tags">
-                    <span class="category-tag active" data-category="all">全部</span>
-                    <span class="category-tag" data-category="security">网络安全</span>
-                    <span class="category-tag" data-category="tools">工具实践</span>
-                    <span class="category-tag" data-category="ctf">CTF竞赛</span>
-                    <span class="category-tag" data-category="linux">Linux探索</span>
+            <div class="blogs-grid" id="blogs-container">
+                <!-- 动态加载博客卡片 -->
+                <div class="loading">
+                    <i class="fas fa-circle-notch fa-spin"></i>
+                    <p>加载中...</p>
                 </div>
             </div>
-        </section>
+        </div>
+    </section>
 
-        <!-- 博客列表 -->
-        <section id="blogs" class="blogs">
-            <div class="container">
-                <div class="section-header">
-                    <h3>最新文章</h3>
-                    <div class="sort-container">
-                        <label for="sort-select">排序方式：</label>
-                        <select id="sort-select">
-                            <option value="newest">最新发布</option>
-                            <option value="oldest">最早发布</option>
-                            <option value="popular">最多评论</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="blogs-grid" id="blogs-container">
-                    <!-- 动态加载博客卡片 -->
-                </div>
-            </div>
-        </section>
-
-        <!-- 关于作者 -->
-        <section id="about" class="about-section">
+    <!-- 关于作者 -->
+    <section id="about" class="about-section">
+        <div class="container">
             <div class="about-image">
                 <img id="profile-avatar" 
-                     src="https://img0.baidu.com/it/u=3147389754,3153593117&fm=253&app=138&f=JPEG?w=800&h=1422" 
+                     src="https://picsum.photos/400/400?random=profile" 
                      alt="作者头像">
             </div>
             <div class="about-content">
                 <h3>关于我</h3>
                 <p id="profile-description">
-                    网络安全小白，热爱技术探索，记录学习路上的思考与实践。  
-                    关注 Web 安全、渗透测试、CTF 竞赛，期待与你交流！
+                    网络安全爱好者，热衷于探索网络安全技术，记录学习路上的思考与实践。
+                    专注于Web安全、渗透测试、CTF竞赛等领域，希望通过分享帮助更多人入门网络安全。
                 </p>
                 <div class="skills" id="skills-container">
-                    <span class="skill-tag">网络安全基础</span>
-                    <span class="skill-tag">Kali Linux</span>
-                    <span class="skill-tag">Python 脚本</span>
-                    <span class="skill-tag">CTF 入门</span>
+                    <!-- 动态加载技能标签 -->
                 </div>
+                <a href="#" id="clear-storage-btn" class="btn btn-outline" style="margin-top: 1rem;">
+                    <i class="fas fa-trash"></i> 清理缓存数据
+                </a>
             </div>
-        </section>
-    </main>
+        </div>
+    </section>
 
     <!-- 页脚 -->
     <footer id="contact">
         <div class="footer-content">
             <div class="social-links">
-                <a href="https://github.com/konwait12" target="_blank" aria-label="GitHub">
+                <a href="https://github.com/konwait12" target="_blank" rel="noopener noreferrer">
                     <i class="fab fa-github"></i>
+                </a>
+                <a href="#" target="_blank" rel="noopener noreferrer">
+                    <i class="fab fa-twitter"></i>
+                </a>
+                <a href="#" target="_blank" rel="noopener noreferrer">
+                    <i class="fab fa-linkedin"></i>
                 </a>
             </div>
             <p class="copyright">
-                © 2024 网络安全博客 | 技术分享平台
+                © 2024 网络安全博客 | 专注于网络安全技术分享
             </p>
         </div>
     </footer>
 
-    <!-- 主题切换 -->
+    <!-- 主题切换（右下角） -->
     <div class="theme-switcher">
-        <button class="theme-btn theme-default active" title="默认主题" data-theme="default"></button>
-        <button class="theme-btn theme-light" title="明亮主题" data-theme="light"></button>
-        <button class="theme-btn theme-dark" title="深色主题" data-theme="dark"></button>
-        <button class="theme-btn theme-blue" title="蓝色主题" data-theme="blue"></button>
-        <button class="theme-btn theme-green" title="绿色主题" data-theme="green"></button>
+        <button class="theme-btn theme-default active" title="默认" data-theme="default"></button>
+        <button class="theme-btn theme-light" title="明亮" data-theme="light"></button>
+        <button class="theme-btn theme-dark" title="深色" data-theme="dark"></button>
+        <button class="theme-btn theme-blue" title="蓝色" data-theme="blue"></button>
+        <button class="theme-btn theme-green" title="绿色" data-theme="green"></button>
     </div>
-
-    <!-- 清理缓存按钮 -->
-    <button id="clear-storage-btn" class="clear-storage-btn">
-        <i class="fas fa-broom"></i>
-    </button>
 
     <!-- 前台逻辑 -->
     <script src="js/main.js"></script>

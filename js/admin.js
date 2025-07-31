@@ -1,13 +1,25 @@
-// 检查管理员是否已登录
-function checkAdminLoggedIn() {
+// 初始化页面
+document.addEventListener('DOMContentLoaded', () => {
+    // 检查登录状态
+    checkLoginStatus();
+    
+    // 初始化博客数据
+    initBlogs();
+    
+    // 设置事件监听器
+    setupEventListeners();
+});
+
+// 检查登录状态
+function checkLoginStatus() {
     const isLoggedIn = localStorage.getItem('kon-myblog-admin') === 'true';
     if (!isLoggedIn) {
+        // 如果未登录，重定向到首页
         window.location.href = 'index.html';
-        alert('请先登录管理员账户');
     }
 }
 
-// 初始化博客数据（管理员页面使用本地存储以便预览）
+// 初始化博客数据
 function initBlogs() {
     // 从JSON文件加载并存储到本地存储供管理界面使用
     fetch('data/blogs.json')
@@ -48,13 +60,18 @@ function renderBlogList() {
     blogListElement.innerHTML = '';
     
     if (blogs.length === 0) {
-        blogListElement.innerHTML = '<p class="no-data">暂无文章，请点击"新增文章"按钮创建</p>';
+        blogListElement.innerHTML = `
+            <div class="no-data">
+                <i class="fas fa-file-alt"></i>
+                <p>暂无文章，请点击"新增文章"按钮创建</p>
+            </div>
+        `;
         return;
     }
     
     // 创建表格
     const table = document.createElement('table');
-    table.className = 'blogs-table';
+    table.className = 'data-table';
     table.innerHTML = `
         <thead>
             <tr>
@@ -74,12 +91,12 @@ function renderBlogList() {
                     <td>${getCategoryName(blog.category)}</td>
                     <td>${blog.date}</td>
                     <td>${blog.comments}</td>
-                    <td class="actions">
+                    <td class="table-actions">
                         <button class="btn btn-sm btn-edit" data-id="${blog.id}">
-                            <i class="fas fa-edit"></i> 编辑（源码教程）
+                            <i class="fas fa-edit"></i> 编辑
                         </button>
                         <button class="btn btn-sm btn-delete" data-id="${blog.id}">
-                            <i class="fas fa-trash"></i> 删除（源码教程）
+                            <i class="fas fa-trash"></i> 删除
                         </button>
                     </td>
                 </tr>
@@ -93,53 +110,54 @@ function renderBlogList() {
     document.querySelectorAll('.btn-edit').forEach(btn => {
         btn.addEventListener('click', function() {
             const blogId = parseInt(this.getAttribute('data-id'));
-            showEditSourceCodeTutorial(blogId);
+            showEditTutorial(blogId);
         });
     });
     
     document.querySelectorAll('.btn-delete').forEach(btn => {
         btn.addEventListener('click', function() {
             const blogId = parseInt(this.getAttribute('data-id'));
-            showDeleteSourceCodeTutorial(blogId);
+            showDeleteTutorial(blogId);
         });
     });
 }
 
-// 显示编辑文章的源代码修改教程
-function showEditSourceCodeTutorial(blogId) {
+// 显示编辑文章教程
+function showEditTutorial(blogId) {
     const blogs = JSON.parse(localStorage.getItem('kon-blogs') || '[]');
     const blog = blogs.find(b => b.id === blogId);
     
     if (!blog) return;
     
-    // 截取Markdown内容作为示例
+    // 截取内容作为示例
     const contentPreview = blog.content.substring(0, 50).replace(/\n/g, ' ') + '...';
     
-    alert(`【编辑文章源代码修改教程】
+    alert(`编辑文章指南：
 1. 打开仓库中的 data/blogs.json 文件
-2. 找到id为 ${blogId} 的文章对象：
+2. 找到ID为 ${blogId} 的文章对象：
 {
   "id": ${blogId},
   "title": "${blog.title}",
   "content": "${contentPreview}",
   ...
 }
-3. 修改需要更新的字段（title、content、category等）
-4. 内容支持Markdown格式
-5. 注意保持JSON格式正确性（逗号、引号等）
-6. 保存文件并提交到GitHub仓库
-7. 等待页面部署后生效`);
-}
-
-// 显示删除文章的源代码修改教程
-function showDeleteSourceCodeTutorial(blogId) {
-    alert(`【删除文章源代码修改教程】
-1. 打开仓库中的 data/blogs.json 文件
-2. 找到id为 ${blogId} 的文章对象
-3. 删除该对象（注意删除前后的逗号，确保JSON格式正确）
-4. 同时删除评论数据：从localStorage中清除blog-${blogId}-comments
+3. 修改需要更新的字段（支持Markdown格式）
+4. 注意保持JSON格式正确性（逗号、引号等）
 5. 保存文件并提交到GitHub仓库
 6. 等待页面部署后生效`);
+}
+
+// 显示删除文章教程
+function showDeleteTutorial(blogId) {
+    if (confirm('确定要删除这篇文章吗？此操作需要修改源代码。')) {
+        alert(`删除文章指南：
+1. 打开仓库中的 data/blogs.json 文件
+2. 找到并删除ID为 ${blogId} 的文章对象
+3. 注意删除前后的逗号，确保JSON格式正确
+4. 同时删除相关评论数据
+5. 保存文件并提交到GitHub仓库
+6. 等待页面部署后生效`);
+    }
 }
 
 // 获取分类名称
@@ -160,8 +178,7 @@ function updateDashboardStats() {
     // 计算评论总数
     let totalComments = 0;
     blogs.forEach(blog => {
-        const comments = JSON.parse(localStorage.getItem(`blog-${blog.id}-comments`) || '[]');
-        totalComments += comments.length;
+        totalComments += blog.comments || 0;
     });
     
     // 计算分类数量
@@ -201,33 +218,38 @@ function renderComments() {
     const commentsContainer = document.getElementById('comments-list');
     if (!commentsContainer) return;
     
+    // 获取所有评论
+    const allComments = [];
     const blogs = JSON.parse(localStorage.getItem('kon-blogs') || '[]');
     
-    // 转换为数组并添加文章标题
-    const commentsArray = [];
+    // 从localStorage收集所有评论
     blogs.forEach(blog => {
         const comments = JSON.parse(localStorage.getItem(`blog-${blog.id}-comments`) || '[]');
         comments.forEach(comment => {
-            commentsArray.push({
+            allComments.push({
                 ...comment,
                 blogId: blog.id,
-                blogTitle: blog.title,
-                id: Date.now() + Math.floor(Math.random() * 1000) // 临时ID
+                blogTitle: blog.title
             });
         });
     });
     
     // 按日期排序（最新的在前）
-    commentsArray.sort((a, b) => new Date(b.date) - new Date(a.date));
+    allComments.sort((a, b) => new Date(b.date) - new Date(a.date));
     
-    if (commentsArray.length === 0) {
-        commentsContainer.innerHTML = '<p class="no-data">暂无评论</p>';
+    if (allComments.length === 0) {
+        commentsContainer.innerHTML = `
+            <div class="no-data">
+                <i class="far fa-comment-dots"></i>
+                <p>暂无评论</p>
+            </div>
+        `;
         return;
     }
     
     // 创建评论表格
     const table = document.createElement('table');
-    table.className = 'comments-table';
+    table.className = 'data-table';
     table.innerHTML = `
         <thead>
             <tr>
@@ -239,15 +261,16 @@ function renderComments() {
             </tr>
         </thead>
         <tbody>
-            ${commentsArray.map(comment => `
+            ${allComments.map((comment, index) => `
                 <tr>
                     <td>${comment.blogTitle}</td>
                     <td>${comment.name}</td>
                     <td class="comment-content">${comment.content}</td>
                     <td>${formatDate(comment.date)}</td>
-                    <td class="actions">
+                    <td class="table-actions">
                         <button class="btn btn-sm btn-delete-comment" 
-                                data-blogid="${comment.blogId}">
+                                data-blogid="${comment.blogId}" 
+                                data-index="${index}">
                             <i class="fas fa-trash"></i> 删除
                         </button>
                     </td>
@@ -263,20 +286,21 @@ function renderComments() {
     document.querySelectorAll('.btn-delete-comment').forEach(btn => {
         btn.addEventListener('click', function() {
             const blogId = parseInt(this.getAttribute('data-blogid'));
-            const row = this.closest('tr');
-            const commentContent = row.querySelector('.comment-content').textContent;
+            const index = parseInt(this.getAttribute('data-index'));
             
             if (confirm('确定要删除这条评论吗？')) {
-                // 获取该文章的所有评论
-                let comments = JSON.parse(localStorage.getItem(`blog-${blogId}-comments`) || '[]');
-                
-                // 找到并删除匹配的评论
-                comments = comments.filter(comment => comment.content !== commentContent);
-                
-                // 保存更新后的评论
+                const comments = JSON.parse(localStorage.getItem(`blog-${blogId}-comments`) || '[]');
+                comments.splice(index, 1);
                 localStorage.setItem(`blog-${blogId}-comments`, JSON.stringify(comments));
                 
-                // 重新渲染评论列表
+                // 更新博客的评论数
+                const blogs = JSON.parse(localStorage.getItem('kon-blogs') || '[]');
+                const blogIndex = blogs.findIndex(b => b.id === blogId);
+                if (blogIndex !== -1) {
+                    blogs[blogIndex].comments = comments.length;
+                    localStorage.setItem('kon-blogs', JSON.stringify(blogs));
+                }
+                
                 renderComments();
                 updateDashboardStats();
             }
@@ -284,13 +308,8 @@ function renderComments() {
     });
 }
 
-// 页面加载完成后初始化
-document.addEventListener('DOMContentLoaded', () => {
-    // 检查登录状态
-    checkAdminLoggedIn();
-    
-    initBlogs();
-    
+// 设置事件监听器
+function setupEventListeners() {
     // 退出登录
     document.getElementById('logout-btn').addEventListener('click', function() {
         localStorage.removeItem('kon-myblog-admin');
@@ -308,7 +327,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // 新增文章按钮
     document.getElementById('add-blog-btn').addEventListener('click', function() {
-        alert(`【新增文章源代码修改教程】
+        alert(`新增文章指南：
 1. 打开仓库中的 data/blogs.json 文件
 2. 在数组中添加新的文章对象：
 {
@@ -339,9 +358,9 @@ document.addEventListener('DOMContentLoaded', () => {
             
             // 更新内容显示
             document.querySelectorAll('.tab-content').forEach(tab => {
-                tab.style.display = 'none';
+                tab.classList.remove('active');
             });
-            document.getElementById(tabId).style.display = 'block';
+            document.getElementById(tabId).classList.add('active');
             
             // 如果切换到评论标签，重新渲染评论
             if (tabId === 'comments-tab') {
@@ -367,13 +386,14 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
         
-        alert('密码修改需要在服务器端进行，此处仅为演示');
+        alert('密码修改功能需要后端支持，此处仅为演示');
         this.reset();
     });
-});
+}
 
 // 格式化日期
 function formatDate(dateString) {
     const date = new Date(dateString);
-    return `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
+    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
 }
+    

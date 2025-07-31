@@ -3,15 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>博客管理 | 网络安全博客</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>博客管理 - 网络安全博客</title>
+    <!-- 引入外部资源 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
+    
+    <!-- 自定义样式 -->
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/admin.css">
 </head>
-<body class="admin-body">
+<body>
     <!-- 管理员头部 -->
     <div class="admin-header">
         <div class="logo">
+            <i class="fas fa-shield-alt"></i>
             <h1>博客管理后台</h1>
         </div>
         <div class="admin-actions">
@@ -21,190 +27,213 @@
         </div>
     </div>
 
-    <!-- 主要内容 -->
-    <main class="admin-main">
-        <div class="container admin-container">
-            <!-- 标签页导航 -->
-            <div class="admin-tabs">
-                <button class="active" data-tab="dashboard-tab">
-                    <i class="fas fa-tachometer-alt"></i>
-                    <span>仪表盘</span>
-                </button>
-                <button data-tab="blogs-tab">
-                    <i class="fas fa-blog"></i>
-                    <span>文章管理</span>
-                </button>
-                <button data-tab="comments-tab">
-                    <i class="far fa-comments"></i>
-                    <span>评论管理</span>
-                </button>
-                <button data-tab="settings-tab">
-                    <i class="fas fa-cog"></i>
-                    <span>设置</span>
-                </button>
-            </div>
+    <!-- 主内容区 -->
+    <div class="admin-container">
+        <!-- 管理标签页 -->
+        <div class="admin-tabs">
+            <button class="active" data-tab="dashboard">
+                <i class="fas fa-tachometer-alt"></i>
+                <span>仪表盘</span>
+            </button>
+            <button data-tab="blogs">
+                <i class="fas fa-blog"></i>
+                <span>文章管理</span>
+            </button>
+            <button data-tab="comments">
+                <i class="fas fa-comments"></i>
+                <span>评论管理</span>
+            </button>
+            <button data-tab="settings">
+                <i class="fas fa-cog"></i>
+                <span>网站设置</span>
+            </button>
+        </div>
 
-            <!-- 仪表盘 -->
-            <div id="dashboard-tab" class="tab-content">
-                <section class="admin-section">
-                    <h3>网站统计</h3>
-                    <div class="stats-grid">
-                        <div class="stat-card">
-                            <div class="stat-icon">
-                                <i class="fas fa-file-alt"></i>
-                            </div>
-                            <div class="stat-info">
-                                <h4>总文章数</h4>
-                                <p id="stat-total-blogs">0</p>
-                            </div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-icon">
-                                <i class="far fa-comment"></i>
-                            </div>
-                            <div class="stat-info">
-                                <h4>总评论数</h4>
-                                <p id="stat-total-comments">0</p>
-                            </div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-icon">
-                                <i class="fas fa-folder"></i>
-                            </div>
-                            <div class="stat-info">
-                                <h4>分类数</h4>
-                                <p id="stat-total-categories">0</p>
-                            </div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-icon">
-                                <i class="fas fa-clock"></i>
-                            </div>
-                            <div class="stat-info">
-                                <h4>最新文章</h4>
-                                <p id="stat-latest-post">无</p>
-                            </div>
-                        </div>
+        <!-- 仪表盘 -->
+        <div id="dashboard-tab" class="tab-content active">
+            <section class="admin-section">
+                <div class="section-header">
+                    <h3>数据统计</h3>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h4>文章总数</h4>
+                        <div class="stat-value" id="stat-total-blogs">0</div>
+                        <div class="stat-desc">篇文章已发布</div>
                     </div>
-                </section>
-
-                <section class="admin-section">
-                    <h3>最近活动</h3>
-                    <p class="activity-info">这里将显示您的最近操作记录</p>
+                    <div class="stat-card">
+                        <h4>评论总数</h4>
+                        <div class="stat-value" id="stat-total-comments">0</div>
+                        <div class="stat-desc">条评论</div>
+                    </div>
+                    <div class="stat-card">
+                        <h4>分类总数</h4>
+                        <div class="stat-value" id="stat-total-categories">0</div>
+                        <div class="stat-desc">个分类</div>
+                    </div>
+                    <div class="stat-card">
+                        <h4>最新文章</h4>
+                        <div class="stat-value" id="stat-latest-post">--</div>
+                        <div class="stat-desc">最近发布</div>
+                    </div>
+                </div>
+            </section>
+            
+            <section class="admin-section">
+                <div class="section-header">
+                    <h3>文章分类分布</h3>
+                </div>
+                <div class="chart-container">
+                    <canvas id="category-chart"></canvas>
+                </div>
+            </section>
+            
+            <section class="admin-section">
+                <div class="section-header">
+                    <h3>快速操作</h3>
+                </div>
+                <div class="quick-actions">
+                    <button id="add-blog-btn" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> 新增文章
+                    </button>
+                    <a href="https://github.com/konwait12/konyyds.github.io/blob/main/data/blogs.json" target="_blank" class="btn btn-outline">
+                        <i class="fas fa-code"></i> 编辑文章源码
+                    </a>
                     <button id="clear-storage" class="btn btn-warning">
                         <i class="fas fa-trash"></i> 清理本地存储数据
                     </button>
-                </section>
-            </div>
+                </div>
+            </section>
+        </div>
 
-            <!-- 文章管理 -->
-            <div id="blogs-tab" class="tab-content" style="display: none;">
-                <section class="admin-section">
-                    <div class="section-header">
-                        <h3>文章管理</h3>
-                        <div class="search-filter">
-                            <input type="text" id="blog-search" placeholder="搜索文章...">
-                        </div>
+        <!-- 文章管理 -->
+        <div id="blogs-tab" class="tab-content">
+            <section class="admin-section">
+                <div class="section-header">
+                    <h3>文章管理</h3>
+                    <div class="search-filter">
+                        <input type="text" id="blog-search" placeholder="搜索文章...">
                     </div>
-                    <div id="blog-list">
-                        <!-- 文章列表将动态加载 -->
+                </div>
+                <div id="blog-list">
+                    <!-- 文章列表将动态加载 -->
+                    <div class="loading">
+                        <i class="fas fa-circle-notch fa-spin"></i>
+                        <p>加载中...</p>
                     </div>
-                    <div style="display: flex; gap: 1rem; margin-top: 1rem;">
-                        <button id="add-blog-btn" class="btn btn-primary">
-                            <i class="fas fa-plus"></i> 新增文章
-                        </button>
-                        <a href="https://github.com/konwait12/konyyds.github.io/blob/main/data/blogs.json" target="_blank" class="btn btn-outline">
-                            <i class="fas fa-code"></i> 编辑源代码
+                </div>
+                <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+                    <button id="add-blog-btn-2" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> 新增文章
+                    </button>
+                    <a href="https://github.com/konwait12/konyyds.github.io/blob/main/data/blogs.json" target="_blank" class="btn btn-outline">
+                        <i class="fas fa-code"></i> 前往添加源代码
+                    </a>
+                </div>
+            </section>
+        </div>
+
+        <!-- 评论管理 -->
+        <div id="comments-tab" class="tab-content">
+            <section class="admin-section">
+                <div class="section-header">
+                    <h3>评论管理</h3>
+                    <div class="search-filter">
+                        <input type="text" id="comment-search" placeholder="搜索评论...">
+                    </div>
+                </div>
+                <div id="comments-list">
+                    <!-- 评论列表将动态加载 -->
+                    <div class="loading">
+                        <i class="fas fa-circle-notch fa-spin"></i>
+                        <p>加载中...</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- 网站设置 -->
+        <div id="settings-tab" class="tab-content">
+            <section class="admin-section">
+                <div class="section-header">
+                    <h3>网站设置</h3>
+                </div>
+                <form id="settings-form">
+                    <div class="form-group">
+                        <label for="site-title">网站标题</label>
+                        <input type="text" id="site-title" placeholder="输入网站标题">
+                    </div>
+                    <div class="form-group">
+                        <label for="hero-title">首页标题</label>
+                        <input type="text" id="hero-title" placeholder="输入首页主标题">
+                    </div>
+                    <div class="form-group">
+                        <label for="hero-subtitle">首页副标题</label>
+                        <input type="text" id="hero-subtitle" placeholder="输入首页副标题">
+                    </div>
+                    <div class="form-group">
+                        <label for="profile-description">个人简介</label>
+                        <textarea id="profile-description" placeholder="输入个人简介"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="profile-skills">技能标签（用逗号分隔）</label>
+                        <input type="text" id="profile-skills" placeholder="例如：网络安全,Python,渗透测试">
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">保存设置</button>
+                        <a href="https://github.com/konwait12/konyyds.github.io/tree/main/data" target="_blank" class="btn btn-outline">
+                            <i class="fas fa-code"></i> 编辑设置源码
                         </a>
                     </div>
-                </section>
+                </form>
+            </section>
+        </div>
+    </div>
+
+    <!-- 新增/编辑文章模态框 -->
+    <div id="blog-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modal-title">新增文章</h3>
+                <button class="close-modal">&times;</button>
             </div>
-
-            <!-- 评论管理 -->
-            <div id="comments-tab" class="tab-content" style="display: none;">
-                <section class="admin-section">
-                    <div class="section-header">
-                        <h3>评论管理</h3>
-                        <div class="search-filter">
-                            <input type="text" id="comment-search" placeholder="搜索评论...">
-                        </div>
+            <div class="modal-body">
+                <form id="blog-form">
+                    <input type="hidden" id="blog-id">
+                    <div class="form-group">
+                        <label for="blog-title">文章标题</label>
+                        <input type="text" id="blog-title" required>
                     </div>
-                    <div id="comments-list">
-                        <!-- 评论列表将动态加载 -->
+                    <div class="form-group">
+                        <label for="blog-category">分类</label>
+                        <select id="blog-category" required>
+                            <option value="security">网络安全</option>
+                            <option value="tools">工具实践</option>
+                            <option value="ctf">CTF竞赛</option>
+                            <option value="linux">Linux探索</option>
+                        </select>
                     </div>
-                </section>
+                    <div class="form-group">
+                        <label for="blog-image">图片URL</label>
+                        <input type="text" id="blog-image" placeholder="文章封面图片URL">
+                    </div>
+                    <div class="form-group">
+                        <label for="blog-tags">标签（用逗号分隔）</label>
+                        <input type="text" id="blog-tags" placeholder="例如：网络安全,隐私保护">
+                    </div>
+                    <div class="form-group">
+                        <label for="blog-content">文章内容（Markdown格式）</label>
+                        <textarea id="blog-content" rows="15" required placeholder="使用Markdown格式编写文章内容"></textarea>
+                        <p class="form-hint">支持Markdown格式，如# 标题、**粗体**、- 列表、```代码块```等</p>
+                    </div>
+                </form>
             </div>
-
-            <!-- 设置 -->
-            <div id="settings-tab" class="tab-content" style="display: none;">
-                <section class="admin-section">
-                    <h3>基本设置</h3>
-                    <form id="settings-form">
-                        <div class="form-group">
-                            <label for="site-title">网站标题</label>
-                            <input type="text" id="site-title" placeholder="输入网站标题">
-                        </div>
-                        <div class="form-group">
-                            <label for="hero-title">首页标题</label>
-                            <input type="text" id="hero-title" placeholder="输入首页标题">
-                        </div>
-                        <div class="form-group">
-                            <label for="hero-subtitle">首页副标题</label>
-                            <input type="text" id="hero-subtitle" placeholder="输入首页副标题">
-                        </div>
-                        <button type="submit" class="btn btn-primary">保存设置</button>
-                    </form>
-                </section>
-
-                <section class="admin-section">
-                    <h3>个人资料</h3>
-                    <form id="profile-form">
-                        <div class="form-group">
-                            <label for="profile-avatar">头像URL</label>
-                            <input type="text" id="profile-avatar" placeholder="输入头像图片URL">
-                        </div>
-                        <div class="form-group">
-                            <label for="profile-desc">个人描述</label>
-                            <textarea id="profile-desc" rows="4" placeholder="输入个人描述"></textarea>
-                        </div>
-                        <div class="form-group">
-                            <label for="profile-skills">技能标签（用逗号分隔）</label>
-                            <input type="text" id="profile-skills" placeholder="例如：网络安全,Python,Linux">
-                        </div>
-                        <button type="submit" class="btn btn-primary">保存资料</button>
-                    </form>
-                </section>
-
-                <section class="admin-section">
-                    <h3>密码修改</h3>
-                    <form id="password-form">
-                        <div class="form-group">
-                            <label for="current-password">当前密码</label>
-                            <input type="password" id="current-password" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="new-password">新密码</label>
-                            <input type="password" id="new-password" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="confirm-password">确认新密码</label>
-                            <input type="password" id="confirm-password" required>
-                        </div>
-                        <button type="submit" class="btn btn-primary">修改密码</button>
-                    </form>
-                </section>
+            <div class="modal-footer">
+                <button class="btn btn-outline close-modal">取消</button>
+                <button id="save-blog-btn" class="btn btn-primary">保存文章</button>
             </div>
         </div>
-    </main>
-
-    <!-- 页脚 -->
-    <footer>
-        <div class="footer-content">
-            <p class="copyright">
-                © 2024 网络安全博客 | 管理后台
-            </p>
-        </div>
-    </footer>
+    </div>
 
     <!-- 管理员逻辑 -->
     <script src="js/admin.js"></script>

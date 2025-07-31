@@ -1,6 +1,29 @@
 // 初始化博客详情页
 document.addEventListener('DOMContentLoaded', () => {
-    // 检查登录状态（仅登录状态存储在本地）
+    // 引入Markdown解析库
+    const script = document.createElement('script');
+    script.src = 'https://cdn.jsdelivr.net/npm/marked/marked.min.js';
+    script.onload = () => {
+        // 代码高亮库
+        const highlightCss = document.createElement('link');
+        highlightCss.rel = 'stylesheet';
+        highlightCss.href = 'https://cdn.jsdelivr.net/npm/highlight.js@11.7.0/styles/github-dark.min.css';
+        document.head.appendChild(highlightCss);
+        
+        const highlightJs = document.createElement('script');
+        highlightJs.src = 'https://cdn.jsdelivr.net/npm/highlight.js@11.7.0/lib/highlight.min.js';
+        highlightJs.onload = () => {
+            // 初始化页面功能
+            initPage();
+        };
+        document.head.appendChild(highlightJs);
+    };
+    document.head.appendChild(script);
+});
+
+// 初始化页面功能
+function initPage() {
+    // 检查登录状态
     checkAdminLogin();
     
     // 从URL获取博客ID
@@ -31,63 +54,26 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('detail-search-input').addEventListener('keypress', function(e) {
         if (e.key === 'Enter') handleDetailSearch();
     });
-
-    // 登录触发按钮
-    document.getElementById('login-trigger-detail').addEventListener('click', function(e) {
-        e.preventDefault();
-        document.getElementById('login-panel-detail').style.display = 'block';
-    });
-
-    // 登录表单提交
-    document.getElementById('login-form-detail').addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        const username = document.getElementById('username-detail').value;
-        const password = document.getElementById('password-detail').value;
-        
-        if (username === 'kon-myblog' && password === 'hfhf888888') {
-            localStorage.setItem('kon-myblog-admin', 'true');
-            checkAdminLogin();
-            document.getElementById('login-panel-detail').style.display = 'none';
-            document.getElementById('login-form-detail').reset();
-            alert('登录成功，已跳转到管理后台');
-            window.location.href = 'admin.html';
-        } else {
-            alert('用户名或密码错误');
-        }
-    });
-});
+}
 
 // 检查管理员登录状态
 function checkAdminLogin() {
     const isLoggedIn = localStorage.getItem('kon-myblog-admin') === 'true';
-    if (isLoggedIn) {
-        document.getElementById('admin-link-detail').style.display = 'block';
+    const adminLink = document.getElementById('admin-link-detail');
+    
+    if (isLoggedIn && adminLink) {
+        adminLink.style.display = 'block';
     }
 }
 
-// 获取博客数据（直接从JSON文件获取）
+// 获取博客数据
 async function getBlogs() {
     try {
         const response = await fetch('data/blogs.json');
         return await response.json();
     } catch (error) {
         console.error('获取博客数据失败:', error);
-        // 使用备用数据
-        const fallbackBlogs = [
-            {
-                id: 1,
-                title: "网络安全基础：如何保护你的在线隐私",
-                content: "# 网络安全基础：如何保护你的在线隐私\n\n在数字时代，保护个人隐私变得尤为重要...",
-                image: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1170&q=80",
-                date: "2024-01-15",
-                comments: 12,
-                category: "security",
-                tags: ["网络安全", "隐私保护"]
-            }
-            // 其他备用数据...
-        ];
-        return fallbackBlogs;
+        return [];
     }
 }
 
@@ -103,6 +89,9 @@ async function loadBlog(blogId) {
         return;
     }
     
+    // 更新页面标题
+    document.title = `${blog.title} - 网络安全博客`;
+    
     // 使用marked解析Markdown内容
     const renderedContent = marked.parse(blog.content);
     
@@ -110,7 +99,7 @@ async function loadBlog(blogId) {
         <div class="blog-header">
             <h1 class="blog-title">${blog.title}</h1>
             <div class="blog-meta">
-                <span><i class="far fa-user"></i> 作者</span>
+                <span><i class="far fa-user"></i> 网络安全爱好者</span>
                 <span><i class="far fa-calendar"></i> ${formatDate(blog.date)}</span>
                 <span><i class="far fa-comment"></i> ${blog.comments} 条评论</span>
                 <span><i class="far fa-folder"></i> ${getCategoryName(blog.category)}</span>
@@ -129,8 +118,8 @@ async function loadBlog(blogId) {
             ${blog.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
         </div>
     `;
-
-    // 对代码块进行高亮
+    
+    // 代码高亮
     hljs.highlightAll();
 }
 
@@ -140,7 +129,7 @@ async function loadRelatedPosts(currentBlogId) {
     const currentBlog = blogs.find(b => b.id == currentBlogId);
     const relatedContainer = document.getElementById('related-container');
     
-    if (!currentBlog) return;
+    if (!currentBlog || !relatedContainer) return;
     
     // 获取相同分类的文章（排除当前文章）
     const relatedBlogs = blogs.filter(blog => 
@@ -171,13 +160,15 @@ async function loadRelatedPosts(currentBlogId) {
     `).join('');
 }
 
-// 加载评论（评论使用localStorage，因为没有后端存储）
+// 加载评论
 function loadComments(blogId) {
     const commentsContainer = document.getElementById('comments-container');
     const commentsCount = document.getElementById('comments-count');
     
+    if (!commentsContainer || !commentsCount) return;
+    
     // 从localStorage获取评论
-    const comments = JSON.parse(localStorage.getItem(`blog-${blogId}-comments`)) || [];
+    const comments = JSON.parse(localStorage.getItem(`blog-${blogId}-comments`) || '[]');
     
     commentsCount.textContent = comments.length;
     
@@ -228,11 +219,14 @@ function submitComment(blogId) {
     };
     
     // 获取现有评论
-    const comments = JSON.parse(localStorage.getItem(`blog-${blogId}-comments`)) || [];
+    const comments = JSON.parse(localStorage.getItem(`blog-${blogId}-comments`) || '[]');
     comments.push(newComment);
     
     // 保存评论
     localStorage.setItem(`blog-${blogId}-comments`, JSON.stringify(comments));
+    
+    // 更新博客的评论数
+    updateBlogCommentCount(blogId, comments.length);
     
     // 重新加载评论
     loadComments(blogId);
@@ -241,6 +235,31 @@ function submitComment(blogId) {
     document.getElementById('comment-form').reset();
     
     alert('评论已提交，感谢您的参与！');
+}
+
+// 更新博客的评论数
+async function updateBlogCommentCount(blogId, count) {
+    // 先从本地存储获取
+    let blogs = JSON.parse(localStorage.getItem('kon-blogs') || '[]');
+    const blogIndex = blogs.findIndex(b => b.id == blogId);
+    
+    if (blogIndex !== -1) {
+        blogs[blogIndex].comments = count;
+        localStorage.setItem('kon-blogs', JSON.stringify(blogs));
+    } else {
+        // 如果本地没有，从JSON获取并更新本地
+        try {
+            const response = await fetch('data/blogs.json');
+            blogs = await response.json();
+            const index = blogs.findIndex(b => b.id == blogId);
+            if (index !== -1) {
+                blogs[index].comments = count;
+                localStorage.setItem('kon-blogs', JSON.stringify(blogs));
+            }
+        } catch (error) {
+            console.error('更新评论数失败:', error);
+        }
+    }
 }
 
 // 详情页搜索处理
@@ -256,20 +275,23 @@ function handleDetailSearch() {
 
 // 显示错误信息
 function showError(title, message) {
-    document.getElementById('blog-article').innerHTML = `
-        <div class="error">
-            <i class="fas fa-exclamation-triangle"></i>
-            <h3>${title}</h3>
-            <p>${message}</p>
-            <a href="index.html" class="btn btn-primary">返回首页</a>
-        </div>
-    `;
+    const blogArticle = document.getElementById('blog-article');
+    if (blogArticle) {
+        blogArticle.innerHTML = `
+            <div class="no-results">
+                <i class="fas fa-exclamation-triangle"></i>
+                <h3>${title}</h3>
+                <p>${message}</p>
+                <a href="index.html" class="btn btn-primary">返回首页</a>
+            </div>
+        `;
+    }
 }
 
 // 工具函数
 function formatDate(dateString) {
     const date = new Date(dateString);
-    return `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日`;
+    return `${date.getFullYear()}年${String(date.getMonth() + 1).padStart(2, '0')}月${String(date.getDate()).padStart(2, '0')}日`;
 }
 
 function getCategoryName(category) {
@@ -286,3 +308,4 @@ function validateEmail(email) {
     const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     return re.test(String(email).toLowerCase());
 }
+    
