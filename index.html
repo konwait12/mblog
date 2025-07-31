@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Homura - 简约博客</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        :root {
+            --primary-color: rgba(40, 44, 52, 0.85);
+            --accent-color: #61dafb;
+            --text-color: #f0f0f0;
+            --secondary-text: #abb2bf;
+            --card-bg: rgba(30, 34, 42, 0.75);
+            --border-radius: 12px;
+            --transition: all 0.3s ease;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a1e29, #0d1117);
+            color: var(--text-color);
+            min-height: 100vh;
+            background-attachment: fixed;
+            background-size: cover;
+            background-position: center;
+            overflow-x: hidden;
+            position: relative;
+            padding-bottom: 100px;
+        }
+        
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('https://images.unsplash.com/photo-1505506874110-6a7a69069a08?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1887&q=80') no-repeat center center/cover;
+            opacity: 0.35;
+            z-index: -1;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* 导航栏 */
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(15, 18, 25, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+        }
+        
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--accent-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .logo i {
+            font-size: 1.5rem;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 30px;
+        }
+        
+        .nav-links a {
+            color: var(--text-color);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 1.1rem;
+            transition: var(--transition);
+            position: relative;
+            padding: 5px 0;
+        }
+        
+        .nav-links a:hover {
+            color: var(--accent-color);
+        }
+        
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--accent-color);
+            transition: var(--transition);
+        }
+        
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+        
+        .github-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: var(--text-color);
+            padding: 8px 20px;
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition);
+            backdrop-filter: blur(5px);
+        }
+        
+        .github-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* 博客内容 */
+        .hero {
+            text-align: center;
+            padding: 80px 0 50px;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            background: linear-gradient(to right, #61dafb, #a66dff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1.2;
+        }
+        
+        .hero p {
+            font-size: 1.2rem;
+            color: var(--secondary-text);
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+        
+        /* 博客文章 */
+        .blog-section {
+            margin: 60px 0;
+        }
+        
+        .section-title {
+            font-size: 1.8rem;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid rgba(97, 218, 251, 0.3);
+            display: inline-block;
+        }
+        
+        .blog-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 30px;
+            margin-top: 20px;
+        }
+        
+        .blog-card {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            transition: var(--transition);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            transform: translateY(0);
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .blog-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.35);
+            border-color: rgba(97, 218, 251, 0.3);
+        }
+        
+        .blog-img {
+            height: 200px;
+            overflow: hidden;
+        }
+        
+        .blog-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: var(--transition);
+        }
+        
+        .blog-card:hover .blog-img img {
+            transform: scale(1.05);
+        }
+        
+        .blog-content {
+            padding: 25px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .blog-meta {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+            color: var(--secondary-text);
+        }
+        
+        .blog-date {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .blog-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .status-icon {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+        }
+        
+        .status-icon.published {
+            background: rgba(76, 175, 80, 0.2);
+            color: #4caf50;
+            border: 1px solid #4caf50;
+        }
+        
+        .status-icon.draft {
+            background: rgba(255, 152, 0, 0.2);
+            color: #ff9800;
+            border: 1px solid #ff9800;
+        }
+        
+        .blog-title {
+            font-size: 1.4rem;
+            margin-bottom: 12px;
+            color: var(--text-color);
+        }
+        
+        .blog-excerpt {
+            color: var(--secondary-text);
+            line-height: 1.6;
+            margin-bottom: 20px;
+            flex-grow: 1;
+        }
+        
+        .blog-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: auto;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        
+        .read-time {
+            font-size: 0.9rem;
+            color: var(--secondary-text);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .read-more {
+            color: var(--accent-color);
+            text-decoration: none;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: var(--transition);
+        }
+        
+        .read-more:hover {
+            gap: 8px;
+        }
+        
+        /* 自定义背景区域 */
+        .custom-bg {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            padding: 30px;
+            margin: 60px 0;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        
+        .custom-bg h2 {
+            margin-bottom: 20px;
+            color: var(--accent-color);
+        }
+        
+        .bg-controls {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .bg-preview {
+            flex: 1;
+            min-width: 250px;
+            height: 150px;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            background: #2c303c;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .bg-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .bg-options {
+            flex: 2;
+            min-width: 300px;
+        }
+        
+        .bg-option {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .bg-option input[type="radio"] {
+            accent-color: var(--accent-color);
+        }
+        
+        .bg-option label {
+            cursor: pointer;
+        }
+        
+        .url-input {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .url-input input {
+            flex-grow: 1;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            padding: 10px 15px;
+            color: var(--text-color);
+            font-size: 1rem;
+        }
+        
+        .url-input button {
+            background: var(--accent-color);
+            color: #1a1e29;
+            border: none;
+            border-radius: 6px;
+            padding: 0 20px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .url-input button:hover {
+            background: #4fc7f7;
+            transform: translateY(-2px);
+        }
+        
+        /* 页脚 */
+        footer {
+            background: rgba(15, 18, 25, 0.95);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 40px 0;
+            margin-top: 60px;
+        }
+        
+        .footer-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+        
+        .footer-logo {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--accent-color);
+            margin-bottom: 20px;
+        }
+        
+        .footer-desc {
+            max-width: 600px;
+            color: var(--secondary-text);
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+        
+        .footer-links {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .footer-links a {
+            color: var(--secondary-text);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+        
+        .footer-links a:hover {
+            color: var(--accent-color);
+        }
+        
+        .copyright {
+            color: var(--secondary-text);
+            font-size: 0.9rem;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        
+        .powered-by {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            justify-content: center;
+            margin-top: 10px;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .blog-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .bg-controls {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <header>
+        <div class="container">
+            <nav>
+                <div class="logo">
+                    <i class="fas fa-blog"></i>
+                    <span>Homura</span>
+                </div>
+                <div class="nav-links">
+                    <a href="#"><i class="fas fa-home"></i> 主页</a>
+                    <a href="#"><i class="fas fa-archive"></i> 归档</a>
+                    <a href="#"><i class="fas fa-info-circle"></i> 关于</a>
+                </div>
+                <a href="https://github.com" class="github-btn" target="_blank">
+                    <i class="fab fa-github"></i> GitHub
+                </a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- 博客内容 -->
+    <main class="container">
+        <section class="hero">
+            <h1>记录思考 · 分享知识</h1>
+            <p>一个简约而优雅的博客空间，记录技术探索与生活感悟，分享有价值的内容给每一位访客。</p>
+        </section>
+
+        <section class="blog-section">
+            <h2 class="section-title">最新文章</h2>
+            <div class="blog-container">
+                <!-- 博客文章 1 -->
+                <article class="blog-card">
+                    <div class="blog-img">
+                        <img src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" alt="代码编程">
+                    </div>
+                    <div class="blog-content">
+                        <div class="blog-meta">
+                            <div class="blog-date">
+                                <i class="far fa-calendar"></i>
+                                <span>2025-07-30</span>
+                            </div>
+                            <div class="blog-status">
+                                <span class="status-icon draft"><i class="fas fa-pen"></i></span>
+                                <span>草稿</span>
+                            </div>
+                        </div>
+                        <h3 class="blog-title">探索现代前端框架的设计哲学</h3>
+                        <p class="blog-excerpt">深入探讨React、Vue和Svelte等框架的设计理念，分析它们如何解决开发中的常见问题，以及未来前端框架的发展方向。</p>
+                        <div class="blog-footer">
+                            <div class="read-time">
+                                <i class="far fa-clock"></i>
+                                <span>8分钟阅读</span>
+                            </div>
+                            <a href="#" class="read-more">
+                                阅读更多 <i class="fas fa-arrow-right"></i>
+                            </a>
+                        </div>
+                    </div>
+                </article>
+                
+                <!-- 博客文章 2 -->
+                <article class="blog-card">
+                    <div class="blog-img">
+                        <img src="https://images.unsplash.com/photo-1547658719-da2b51169166?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1460&q=80" alt="人工智能">
+                    </div>
+                    <div class="blog-content">
+                        <div class="blog-meta">
+                            <div class="blog-date">
+                                <i class="far fa-calendar"></i>
+                                <span>2025-07-28</span>
+                            </div>
+                            <div class="blog-status">
+                                <span class="status-icon published"><i class="fas fa-check"></i></span>
+                                <span>已发布</span>
+                            </div>
+                        </div>
+                        <h3 class="blog-title">AI在创意设计中的应用实践</h3>
+                        <p class="blog-excerpt">探索人工智能如何改变设计工作流程，从自动化布局生成到个性化用户体验设计，AI正在重塑创意产业。</p>
+                        <div class="blog-footer">
+                            <div class="read-time">
+                                <i class="far fa-clock"></i>
+                                <span>12分钟阅读</span>
+                            </div>
+                            <a href="#" class="read-more">
+                                阅读更多 <i class="fas fa-arrow-right"></i>
+                            </a>
+                        </div>
+                    </div>
+                </article>
+                
+                <!-- 博客文章 3 -->
+                <article class="blog-card">
+                    <div class="blog-img">
+                        <img src="https://images.unsplash.com/photo-1551650975-87deedd944c3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1374&q=80" alt="网络安全">
+                    </div>
+                    <div class="blog-content">
+                        <div class="blog-meta">
+                            <div class="blog-date">
+                                <i class="far fa-calendar"></i>
+                                <span>2025-07-25</span>
+                            </div>
+                            <div class="blog-status">
+                                <span class="status-icon published"><i class="fas fa-check"></i></span>
+                                <span>已发布</span>
+                            </div>
+                        </div>
+                        <h3 class="blog-title">Web应用安全最佳实践指南</h3>
+                        <p class="blog-excerpt">全面解析现代Web应用中常见的安全漏洞，并提供实用防护策略，帮助开发者构建更安全的应用程序。</p>
+                        <div class="blog-footer">
+                            <div class="read-time">
+                                <i class="far fa-clock"></i>
+                                <span>10分钟阅读</span>
+                            </div>
+                            <a href="#" class="read-more">
+                                阅读更多 <i class="fas fa-arrow-right"></i>
+                            </a>
+                        </div>
+                    </div>
+                </article>
+            </div>
+        </section>
+
+        <!-- 自定义背景区域 -->
+        <section class="custom-bg">
+            <h2><i class="fas fa-image"></i> 自定义博客背景</h2>
+            <div class="bg-controls">
+                <div class="bg-preview">
+                    <img id="bg-preview-img" src="https://images.unsplash.com/photo-1505506874110-6a7a69069a08?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1887&q=80" alt="背景预览">
+                </div>
+                <div class="bg-options">
+                    <div class="bg-option">
+                        <input type="radio" id="bg1" name="background" value="1" checked>
+                        <label for="bg1">星空主题</label>
+                    </div>
+                    <div class="bg-option">
+                        <input type="radio" id="bg2" name="background" value="2">
+                        <label for="bg2">山脉景观</label>
+                    </div>
+                    <div class="bg-option">
+                        <input type="radio" id="bg3" name="background" value="3">
+                        <label for="bg3">抽象几何</label>
+                    </div>
+                    <div class="bg-option">
+                        <input type="radio" id="custom" name="background" value="custom">
+                        <label for="custom">自定义图片</label>
+                    </div>
+                    <div class="url-input">
+                        <input type="text" id="bg-url" placeholder="输入图片URL地址..." disabled>
+                        <button id="apply-bg">应用</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- 页脚 -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">Homura</div>
+                <p class="footer-desc">一个简约而强大的博客系统，专注于内容创作和知识分享。通过简洁的设计和优雅的排版，为作者和读者提供最佳的写作和阅读体验。</p>
+                <div class="footer-links">
+                    <a href="#"><i class="fas fa-home"></i> 主页</a>
+                    <a href="#"><i class="fas fa-archive"></i> 归档</a>
+                    <a href="#"><i class="fas fa-info-circle"></i> 关于</a>
+                    <a href="#"><i class="fas fa-rss"></i> RSS</a>
+                    <a href="#"><i class="fas fa-sitemap"></i> 站点地图</a>
+                </div>
+                <div class="copyright">
+                    <span>© 2025 Homura. All Rights Reserved.</span>
+                    <div class="powered-by">
+                        <span>Powered by</span>
+                        <span style="color: #61dafb; font-weight: 600;">Astro</span>
+                        <span>&</span>
+                        <span style="color: #a66dff; font-weight: 600;">Fuarari</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // 背景图片切换功能
+        const bgOptions = document.querySelectorAll('input[name="background"]');
+        const bgPreviewImg = document.getElementById('bg-preview-img');
+        const bgUrlInput = document.getElementById('bg-url');
+        const applyBgBtn = document.getElementById('apply-bg');
+        
+        // 预设背景图片
+        const backgrounds = {
+            1: 'https://images.unsplash.com/photo-1505506874110-6a7a69069a08?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1887&q=80',
+            2: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80',
+            3: 'https://images.unsplash.com/photo-1550684848-fac1c5b4e853?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80'
+        };
+        
+        // 监听背景选项变化
+        bgOptions.forEach(option => {
+            option.addEventListener('change', function() {
+                if (this.value === 'custom') {
+                    bgUrlInput.disabled = false;
+                    bgUrlInput.placeholder = "输入图片URL地址...";
+                } else {
+                    bgUrlInput.disabled = true;
+                    bgPreviewImg.src = backgrounds[this.value];
+                }
+            });
+        });
+        
+        // 应用背景按钮
+        applyBgBtn.addEventListener('click', function() {
+            const selectedOption = document.querySelector('input[name="background"]:checked');
+            
+            if (selectedOption.value === 'custom') {
+                if (bgUrlInput.value.trim() !== '') {
+                    bgPreviewImg.src = bgUrlInput.value;
+                    
+                    // 设置body背景
+                    document.body.style.backgroundImage = `url(${bgUrlInput.value})`;
+                    alert('自定义背景已应用！');
+                } else {
+                    alert('请输入有效的图片URL');
+                }
+            } else {
+                const bgUrl = backgrounds[selectedOption.value];
+                document.body.style.backgroundImage = `url(${bgUrl})`;
+                alert('背景已切换！');
+            }
+        });
+        
+        // 卡片悬停效果增强
+        const blogCards = document.querySelectorAll('.blog-card');
+        blogCards.forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-10px)';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0)';
+            });
+        });
+    </script>
+</body>
+</html>
